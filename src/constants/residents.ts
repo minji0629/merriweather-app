@@ -883,7 +883,7 @@ export const RESIDENTS: Record<ResidentKey, ResidentProfile> = {
 
 이런 말 많이 들어보셨죠?
 
-"너는 왜 이렇게 사람이 많아?"
+"너는 왜 이렇게 주변에 사람이 많아?"
 "혼자 있는 시간도 필요하지 않아?"
 "너무 다 챙기려는 거 아니야?"
 
