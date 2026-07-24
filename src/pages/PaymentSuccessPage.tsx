@@ -4,14 +4,30 @@ import { PageContainer } from '@/components/PageContainer';
 import { Check, Sparkles } from '@/components/Icons';
 
 export function PaymentSuccessPage() {
-  const { setCurrentPage } = useApp();
+  const { setCurrentPage, residentKey } = useApp();
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const paymentKey = params.get('paymentKey');
+    const orderId = params.get('orderId');
+    const amount = params.get('amount');
+
+    const hasValidParams = paymentKey && orderId && amount;
+
     const timer = setTimeout(() => {
-      setCurrentPage('premium');
-    }, 2000);
+      if (hasValidParams && residentKey) {
+        setCurrentPage('premium');
+      } else if (hasValidParams && !residentKey) {
+        // Payment succeeded but state was lost — go home to restart journey
+        window.location.href = '/';
+      } else {
+        // No valid payment params — treat as failure
+        setCurrentPage('payment');
+      }
+    }, 1500);
+
     return () => clearTimeout(timer);
-  }, [setCurrentPage]);
+  }, [setCurrentPage, residentKey]);
 
   return (
     <PageContainer className="bg-base">

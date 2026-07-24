@@ -1,6 +1,30 @@
-import { ReactNode, useState, useCallback, useMemo } from 'react';
+import { ReactNode, useState, useCallback, useMemo, useEffect } from 'react';
 import { AppContext, AppState, Page, Answer } from '@/store/appContext';
 import { ResidentKey } from '@/constants/questions';
+
+const STORAGE_KEY = 'merriweather:app-state';
+
+interface PersistedState {
+  nickname: string;
+  residentKey: ResidentKey | null;
+  answers: Answer[];
+}
+
+function loadPersistedState(): PersistedState {
+  if (typeof window === 'undefined') return { nickname: '', residentKey: null, answers: [] };
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    if (!raw) return { nickname: '', residentKey: null, answers: [] };
+    const parsed = JSON.parse(raw) as Partial<PersistedState>;
+    return {
+      nickname: parsed.nickname ?? '',
+      residentKey: parsed.residentKey ?? null,
+      answers: parsed.answers ?? [],
+    };
+  } catch {
+    return { nickname: '', residentKey: null, answers: [] };
+  }
+}
 
 function detectInitialPage(): Page {
   if (typeof window === 'undefined') return 'landing';
@@ -11,10 +35,23 @@ function detectInitialPage(): Page {
 }
 
 export function AppProvider({ children }: { children: ReactNode }) {
-  const [nickname, setNickname] = useState('');
+  const persisted = useMemo(loadPersistedState, []);
+
+  const [nickname, setNickname] = useState(persisted.nickname);
   const [currentPage, setCurrentPage] = useState<Page>(detectInitialPage());
-  const [answers, setAnswers] = useState<Answer[]>([]);
-  const [residentKey, setResidentKey] = useState<ResidentKey | null>(null);
+  const [answers, setAnswers] = useState<Answer[]>(persisted.answers);
+  const [residentKey, setResidentKey] = useState<ResidentKey | null>(persisted.residentKey);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({ nickname, residentKey, answers }),
+      );
+    } catch {
+      // ignore quota / serialization errors
+    }
+  }, [nickname, residentKey, answers]);
 
   const addAnswer = useCallback((answer: Answer) => {
     setAnswers((prev) => [...prev, answer]);
@@ -32,6 +69,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setAnswers([]);
     setResidentKey(null);
     setCurrentPage('nickname');
+    try {
+      window.localStorage.removeItem(STORAGE_KEY);
+    } catch {
+      // ignore
+    }
   }, []);
 
   const value: AppState = {

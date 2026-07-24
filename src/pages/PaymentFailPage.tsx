@@ -1,9 +1,22 @@
+import { useEffect } from 'react';
 import { useApp } from '@/store/useApp';
 import { PageContainer } from '@/components/PageContainer';
 import { X } from '@/components/Icons';
 
 export function PaymentFailPage() {
   const { setCurrentPage } = useApp();
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('code');
+    const message = params.get('message');
+
+    if (code && message) {
+      // Real Toss failure redirect — go back to payment page
+      const timer = setTimeout(() => setCurrentPage('payment'), 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [setCurrentPage]);
 
   return (
     <PageContainer className="bg-base">
@@ -15,17 +28,8 @@ export function PaymentFailPage() {
           결제에 실패했어요.
         </h1>
         <p className="font-sans text-sm text-text-sub mb-8 animate-fadeUp" style={{ animationDelay: '0.4s', opacity: 0 }}>
-          다시 시도해주세요.
+          잠시 후 결제 페이지로 이동합니다.
         </p>
-        <button
-          onClick={() => setCurrentPage('payment')}
-          className="px-8 py-4 bg-point text-white rounded-full font-sans font-medium text-base
-                     shadow-lg transition-all duration-300 hover:bg-point-dark hover:shadow-xl hover:scale-[1.02] active:scale-95
-                     animate-fadeUp"
-          style={{ animationDelay: '0.6s', opacity: 0 }}
-        >
-          다시 시도하기
-        </button>
       </div>
     </PageContainer>
   );
