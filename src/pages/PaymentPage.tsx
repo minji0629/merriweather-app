@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useApp } from '@/store/useApp';
+import { useAuth } from '@/store/useAuth';
 import { PageContainer } from '@/components/PageContainer';
 import { RESIDENT_CARD } from '@/constants/images';
 import { Check, Clock, Sparkles } from '@/components/Icons';
@@ -8,6 +9,7 @@ import { requestPayment, ProductId } from '@/lib/toss';
 
 export function PaymentPage() {
   const { nickname, setCurrentPage } = useApp();
+  const { user, showLogin } = useAuth();
   const [selected, setSelected] = useState<ProductId>('expedition_plus');
   const [agreed, setAgreed] = useState(false);
   const [paying, setPaying] = useState(false);
@@ -15,6 +17,10 @@ export function PaymentPage() {
 
   const handlePay = async () => {
     if (!agreed) return;
+    if (!user) {
+      showLogin();
+      return;
+    }
     setPaying(true);
     setError('');
     try {
@@ -133,6 +139,19 @@ export function PaymentPage() {
           <div className="mb-6 animate-fadeUp" style={{ animationDelay: '0.5s', opacity: 0 }}>
             <TermsAgreement agreed={agreed} onChange={setAgreed} />
           </div>
+
+          {/* Login notice */}
+          {!user && (
+            <div className="mb-6 p-4 bg-[#FFF8E1] rounded-xl border border-[#FFE082] animate-fadeUp" style={{ animationDelay: '0.55s', opacity: 0 }}>
+              <p className="font-sans text-sm text-text mb-2">결제하려면 로그인이 필요해요.</p>
+              <button
+                onClick={showLogin}
+                className="font-sans text-sm text-point-dark underline hover:text-point transition-colors"
+              >
+                카카오로 로그인하기
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Bottom: pay button + notice */}

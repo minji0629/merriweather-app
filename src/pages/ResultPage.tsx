@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { useApp } from '@/store/useApp';
+import { useAuth } from '@/store/useAuth';
 import { PageContainer } from '@/components/PageContainer';
 import { RESIDENT_CARD, AD_AREA } from '@/constants/images';
 import { getResidentProfile, withNickname } from '@/constants/residents';
@@ -6,6 +8,8 @@ import { Lock, Share2, Sparkles, Check, Gift } from '@/components/Icons';
 
 export function ResultPage() {
   const { nickname, setCurrentPage, residentKey, previewMode, restart } = useApp();
+  const { user, showLogin } = useAuth();
+  const [showSavePrompt, setShowSavePrompt] = useState(false);
   const RESULT = residentKey ? getResidentProfile(residentKey) : null;
 
   if (!RESULT) {
@@ -165,7 +169,13 @@ export function ResultPage() {
           ) : (
             <>
               <button
-                onClick={() => setCurrentPage('payment')}
+                onClick={() => {
+                  if (!user) {
+                    setShowSavePrompt(true);
+                  } else {
+                    setCurrentPage('payment');
+                  }
+                }}
                 className="w-full py-4 bg-point text-white rounded-2xl font-sans font-medium text-base
                            shadow-lg transition-all duration-300 hover:bg-point-dark hover:shadow-xl hover:scale-[1.02] active:scale-95
                            flex items-center justify-between px-6"
@@ -178,7 +188,13 @@ export function ResultPage() {
               </button>
               <div className="relative">
                 <button
-                  onClick={() => setCurrentPage('payment')}
+                  onClick={() => {
+                    if (!user) {
+                      setShowSavePrompt(true);
+                    } else {
+                      setCurrentPage('payment');
+                    }
+                  }}
                   className="w-full py-4 bg-text text-white rounded-2xl font-sans font-medium text-base
                              shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-[1.02] active:scale-95
                              flex items-center justify-between px-6"
@@ -196,6 +212,35 @@ export function ResultPage() {
             </>
           )}
         </div>
+
+        {/* Save result prompt (login required) */}
+        {showSavePrompt && !user && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center px-6">
+            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowSavePrompt(false)} />
+            <div className="relative w-full max-w-sm bg-base rounded-3xl shadow-2xl border border-[#E0DDD8] animate-scaleIn p-6 text-center">
+              <h2 className="font-batang text-xl text-text mb-2">결과를 저장하고 싶다면?</h2>
+              <p className="font-sans text-sm text-text-sub mb-6">
+                로그인하면 결과를 저장하고 언제든 다시 볼 수 있어요.
+              </p>
+              <button
+                onClick={() => {
+                  setShowSavePrompt(false);
+                  showLogin();
+                }}
+                className="w-full py-4 bg-[#FEE500] text-[#3C1E1E] rounded-2xl font-sans font-bold text-base
+                           shadow-lg transition-all duration-300 hover:shadow-xl active:scale-95"
+              >
+                카카오로 로그인
+              </button>
+              <button
+                onClick={() => setShowSavePrompt(false)}
+                className="w-full mt-2 py-3 font-sans text-sm text-text-sub hover:text-text transition-colors"
+              >
+                나중에 하기
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Gift button */}
         <div className="px-6 pb-4">

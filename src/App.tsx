@@ -1,4 +1,5 @@
 import { AppProvider } from '@/store/AppProvider';
+import { AuthProvider } from '@/store/AuthProvider';
 import { useApp } from '@/store/useApp';
 import { LandingPage } from '@/pages/LandingPage';
 import { NicknamePage } from '@/pages/NicknamePage';
@@ -12,6 +13,9 @@ import { PaymentPage } from '@/pages/PaymentPage';
 import { GiftPage } from '@/pages/GiftPage';
 import { PaymentSuccessPage } from '@/pages/PaymentSuccessPage';
 import { PaymentFailPage } from '@/pages/PaymentFailPage';
+import { HamburgerMenu } from '@/components/HamburgerMenu';
+import { LoginModal } from '@/components/LoginModal';
+import { MarketingConsentModal } from '@/components/MarketingConsentModal';
 
 function Router() {
   const { currentPage } = useApp();
@@ -48,9 +52,14 @@ function Router() {
 
 function App() {
   return (
-    <AppProvider>
-      <Router />
-    </AppProvider>
+    <AuthProvider>
+      <AppProvider>
+        <Router />
+        <HamburgerMenu />
+        <LoginModal />
+        <MarketingConsentModal />
+      </AppProvider>
+    </AuthProvider>
   );
 }
 
