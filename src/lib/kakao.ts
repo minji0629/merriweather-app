@@ -141,6 +141,7 @@ export async function authorizeKakao(returnPage?: string): Promise<void> {
   console.log('[Kakao] Redirect URI:', redirectUri);
   console.log('[Kakao] window.location.origin:', window.location.origin);
   console.log('[Kakao] window.location.href:', window.location.href);
+  console.log('Redirect URI:', redirectUri);
   sdk.Auth.authorize({
     redirectUri,
   });
