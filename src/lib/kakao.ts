@@ -143,7 +143,6 @@ export async function authorizeKakao(returnPage?: string): Promise<void> {
   console.log('[Kakao] window.location.href:', window.location.href);
   sdk.Auth.authorize({
     redirectUri,
-    throughTalk: true,
   });
 }
 
