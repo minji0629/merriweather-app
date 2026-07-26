@@ -137,8 +137,12 @@ function getRedirectUri(): string {
 export async function authorizeKakao(returnPage?: string): Promise<void> {
   if (returnPage) saveReturnPage(returnPage);
   const sdk = await ensureKakaoReady();
+  const redirectUri = getRedirectUri();
+  console.log('[Kakao] Redirect URI:', redirectUri);
+  console.log('[Kakao] window.location.origin:', window.location.origin);
+  console.log('[Kakao] window.location.href:', window.location.href);
   sdk.Auth.authorize({
-    redirectUri: getRedirectUri(),
+    redirectUri,
     throughTalk: true,
   });
 }
@@ -147,6 +151,9 @@ export async function handleAuthCallback(): Promise<KakaoUser> {
   const params = new URLSearchParams(window.location.search);
   const code = params.get('code');
   const error = params.get('error');
+
+  console.log('[Kakao] Callback URL:', window.location.href);
+  console.log('[Kakao] Redirect URI (for token exchange):', getRedirectUri());
 
   if (error) {
     throw new Error(`카카오 로그인 실패: ${error}`);
