@@ -13,6 +13,7 @@ import { PaymentPage } from '@/pages/PaymentPage';
 import { GiftPage } from '@/pages/GiftPage';
 import { PaymentSuccessPage } from '@/pages/PaymentSuccessPage';
 import { PaymentFailPage } from '@/pages/PaymentFailPage';
+import { AuthCallbackPage } from '@/pages/AuthCallbackPage';
 import { HamburgerMenu } from '@/components/HamburgerMenu';
 import { LoginModal } from '@/components/LoginModal';
 import { MarketingConsentModal } from '@/components/MarketingConsentModal';
@@ -45,6 +46,8 @@ function Router() {
       return <PaymentSuccessPage />;
     case 'paymentFail':
       return <PaymentFailPage />;
+    case 'authCallback':
+      return <AuthCallbackPage />;
     default:
       return <LandingPage />;
   }

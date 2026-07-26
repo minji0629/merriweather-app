@@ -8,7 +8,8 @@ export interface MarketingConsent {
 
 export interface AuthState {
   user: KakaoUser | null;
-  login: () => Promise<KakaoUser>;
+  setUser: (user: KakaoUser) => void;
+  login: (returnPage?: string) => Promise<void>;
   logout: () => Promise<void>;
   showLogin: () => void;
   hideLogin: () => void;

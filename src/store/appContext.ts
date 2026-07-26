@@ -13,7 +13,8 @@ export type Page =
   | 'payment'
   | 'gift'
   | 'paymentSuccess'
-  | 'paymentFail';
+  | 'paymentFail'
+  | 'authCallback';
 
 export interface Answer {
   questionId: number;

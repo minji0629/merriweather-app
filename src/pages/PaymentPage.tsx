@@ -9,7 +9,8 @@ import { requestPayment, ProductId } from '@/lib/toss';
 
 export function PaymentPage() {
   const { nickname, setCurrentPage } = useApp();
-  const { user, showLogin } = useAuth();
+  const { user, login } = useAuth();
+  const { currentPage } = useApp();
   const [selected, setSelected] = useState<ProductId>('expedition_plus');
   const [agreed, setAgreed] = useState(false);
   const [paying, setPaying] = useState(false);
@@ -18,7 +19,7 @@ export function PaymentPage() {
   const handlePay = async () => {
     if (!agreed) return;
     if (!user) {
-      showLogin();
+      await login(currentPage);
       return;
     }
     setPaying(true);
@@ -145,7 +146,7 @@ export function PaymentPage() {
             <div className="mb-6 p-4 bg-[#FFF8E1] rounded-xl border border-[#FFE082] animate-fadeUp" style={{ animationDelay: '0.55s', opacity: 0 }}>
               <p className="font-sans text-sm text-text mb-2">결제하려면 로그인이 필요해요.</p>
               <button
-                onClick={showLogin}
+                onClick={() => login(currentPage)}
                 className="font-sans text-sm text-point-dark underline hover:text-point transition-colors"
               >
                 카카오로 로그인하기

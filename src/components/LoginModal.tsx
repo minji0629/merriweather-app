@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { useAuth } from '@/store/useAuth';
-import { ensureKakaoReady } from '@/lib/kakao';
+import { useApp } from '@/store/useApp';
 import { X } from '@/components/Icons';
 
 export function LoginModal() {
   const { isLoginOpen, hideLogin, login } = useAuth();
+  const { currentPage } = useApp();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -14,14 +15,12 @@ export function LoginModal() {
     setLoading(true);
     setError('');
     try {
-      await ensureKakaoReady();
-      await login();
+      await login(currentPage);
       hideLogin();
     } catch (e) {
       const msg = e instanceof Error ? e.message : '로그인에 실패했어요.';
       console.warn('[Kakao] login failed:', e);
       setError(msg);
-    } finally {
       setLoading(false);
     }
   };
@@ -57,7 +56,7 @@ export function LoginModal() {
           {loading ? (
             <span className="flex items-center gap-2">
               <span className="w-4 h-4 border-2 border-[#3C1E1E]/30 border-t-[#3C1E1E] rounded-full animate-spin" />
-              로그인 중...
+              이동 중...
             </span>
           ) : (
             <>

@@ -3,13 +3,17 @@ import { useAuth } from '@/store/useAuth';
 import { useApp } from '@/store/useApp';
 
 export function HamburgerMenu() {
-  const { user, logout, showLogin } = useAuth();
-  const { setCurrentPage } = useApp();
+  const { user, logout, login } = useAuth();
+  const { setCurrentPage, currentPage } = useApp();
   const [open, setOpen] = useState(false);
 
-  const handleLoginClick = () => {
+  const handleLoginClick = async () => {
     setOpen(false);
-    showLogin();
+    try {
+      await login(currentPage);
+    } catch (e) {
+      console.warn('[Kakao] login failed:', e);
+    }
   };
 
   const handleLogoutClick = async () => {

@@ -8,7 +8,8 @@ import { Lock, Share2, Sparkles, Check, Gift } from '@/components/Icons';
 
 export function ResultPage() {
   const { nickname, setCurrentPage, residentKey, previewMode, restart } = useApp();
-  const { user, showLogin } = useAuth();
+  const { user, login } = useAuth();
+  const { currentPage } = useApp();
   const [showSavePrompt, setShowSavePrompt] = useState(false);
   const RESULT = residentKey ? getResidentProfile(residentKey) : null;
 
@@ -225,7 +226,7 @@ export function ResultPage() {
               <button
                 onClick={() => {
                   setShowSavePrompt(false);
-                  showLogin();
+                  login(currentPage);
                 }}
                 className="w-full py-4 bg-[#FEE500] text-[#3C1E1E] rounded-2xl font-sans font-bold text-base
                            shadow-lg transition-all duration-300 hover:shadow-xl active:scale-95"

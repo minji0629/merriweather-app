@@ -31,6 +31,7 @@ function detectInitialPage(): Page {
   const path = window.location.pathname;
   if (path === '/payment/success') return 'paymentSuccess';
   if (path === '/payment/fail') return 'paymentFail';
+  if (path === '/auth/callback') return 'authCallback';
   return 'landing';
 }
 

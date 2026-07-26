@@ -3,7 +3,7 @@ import { AuthContext, AuthState, MarketingConsent } from '@/store/authContext';
 import {
   KakaoUser,
   loadUser,
-  loginWithKakao,
+  authorizeKakao,
   logoutKakao,
   hasMarketingConsent,
   setMarketingConsented,
@@ -22,23 +22,25 @@ function loadMarketingDetail(): MarketingConsent {
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<KakaoUser | null>(() => loadUser());
+  const [user, setUserState] = useState<KakaoUser | null>(() => loadUser());
   const [isLoginOpen, setLoginOpen] = useState(false);
   const [isMarketingOpen, setMarketingOpen] = useState(false);
   const [marketingConsent, setMarketingConsentState] = useState<MarketingConsent>(loadMarketingDetail);
 
-  const login = useCallback(async () => {
-    const u = await loginWithKakao();
-    setUser(u);
+  const setUser = useCallback((u: KakaoUser) => {
+    setUserState(u);
     if (!hasMarketingConsent()) {
       setMarketingOpen(true);
     }
-    return u;
+  }, []);
+
+  const login = useCallback(async (returnPage?: string) => {
+    await authorizeKakao(returnPage);
   }, []);
 
   const logout = useCallback(async () => {
     await logoutKakao();
-    setUser(null);
+    setUserState(null);
   }, []);
 
   const showLogin = useCallback(() => setLoginOpen(true), []);
@@ -55,6 +57,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const value: AuthState = useMemo(
     () => ({
       user,
+      setUser,
       login,
       logout,
       showLogin,
@@ -66,7 +69,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       saveMarketingConsent,
       marketingConsent,
     }),
-    [user, login, logout, showLogin, hideLogin, isLoginOpen, showMarketing, hideMarketing, isMarketingOpen, saveMarketingConsent, marketingConsent],
+    [user, setUser, login, logout, showLogin, hideLogin, isLoginOpen, showMarketing, hideMarketing, isMarketingOpen, saveMarketingConsent, marketingConsent],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
