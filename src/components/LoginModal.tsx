@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '@/store/useAuth';
+import { ensureKakaoReady } from '@/lib/kakao';
 import { X } from '@/components/Icons';
 
 export function LoginModal() {
@@ -13,10 +14,13 @@ export function LoginModal() {
     setLoading(true);
     setError('');
     try {
+      await ensureKakaoReady();
       await login();
       hideLogin();
     } catch (e) {
-      setError(e instanceof Error ? e.message : '로그인에 실패했어요.');
+      const msg = e instanceof Error ? e.message : '로그인에 실패했어요.';
+      console.warn('[Kakao] login failed:', e);
+      setError(msg);
     } finally {
       setLoading(false);
     }

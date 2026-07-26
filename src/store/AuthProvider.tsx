@@ -1,4 +1,4 @@
-import { ReactNode, useState, useCallback, useMemo, useEffect } from 'react';
+import { ReactNode, useState, useCallback, useMemo } from 'react';
 import { AuthContext, AuthState, MarketingConsent } from '@/store/authContext';
 import {
   KakaoUser,
@@ -7,7 +7,6 @@ import {
   logoutKakao,
   hasMarketingConsent,
   setMarketingConsented,
-  initKakao,
 } from '@/lib/kakao';
 
 const MARKETING_DETAIL_KEY = 'merriweather_marketing_detail';
@@ -27,10 +26,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoginOpen, setLoginOpen] = useState(false);
   const [isMarketingOpen, setMarketingOpen] = useState(false);
   const [marketingConsent, setMarketingConsentState] = useState<MarketingConsent>(loadMarketingDetail);
-
-  useEffect(() => {
-    initKakao().catch((err) => console.warn('Kakao init failed:', err));
-  }, []);
 
   const login = useCallback(async () => {
     const u = await loginWithKakao();

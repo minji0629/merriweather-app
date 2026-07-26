@@ -85,6 +85,7 @@ export function initKakao(): Promise<void> {
   initPromise = new Promise((resolve, reject) => {
     const key = import.meta.env.VITE_KAKAO_JAVASCRIPT_KEY;
     if (!key) {
+      console.warn('[Kakao] VITE_KAKAO_JAVASCRIPT_KEY 환경변수가 없습니다.');
       reject(new Error('VITE_KAKAO_JAVASCRIPT_KEY is not set'));
       return;
     }
@@ -92,6 +93,7 @@ export function initKakao(): Promise<void> {
       const sdk = window.Kakao;
       if (sdk) {
         if (!sdk.isInitialized()) sdk.init(key);
+        console.log('[Kakao] SDK initialized');
         resolve();
       } else if (attempts > 0) {
         setTimeout(() => tryInit(attempts - 1), 100);
@@ -99,18 +101,21 @@ export function initKakao(): Promise<void> {
         reject(new Error('Kakao SDK failed to load'));
       }
     };
-    tryInit(20);
+    tryInit(30);
   });
   return initPromise;
 }
 
-export function loginWithKakao(): Promise<KakaoUser> {
+export async function ensureKakaoReady(): Promise<KakaoSDK> {
+  await initKakao();
+  const sdk = window.Kakao;
+  if (!sdk) throw new Error('Kakao SDK not loaded');
+  return sdk;
+}
+
+export async function loginWithKakao(): Promise<KakaoUser> {
+  const sdk = await ensureKakaoReady();
   return new Promise((resolve, reject) => {
-    const sdk = window.Kakao;
-    if (!sdk) {
-      reject(new Error('Kakao SDK not loaded'));
-      return;
-    }
     sdk.Auth.login({
       success: (authObj) => {
         sdk.API.request({
@@ -131,25 +136,24 @@ export function loginWithKakao(): Promise<KakaoUser> {
   });
 }
 
-export function logoutKakao(): Promise<void> {
-  return new Promise((resolve) => {
-    const sdk = window.Kakao;
-    if (!sdk) {
-      clearUser();
-      resolve();
-      return;
-    }
-    sdk.Auth.logout({
-      success: () => {
-        clearUser();
-        resolve();
-      },
-      fail: () => {
-        clearUser();
-        resolve();
-      },
+export async function logoutKakao(): Promise<void> {
+  try {
+    const sdk = await ensureKakaoReady();
+    await new Promise<void>((resolve) => {
+      sdk.Auth.logout({
+        success: () => {
+          clearUser();
+          resolve();
+        },
+        fail: () => {
+          clearUser();
+          resolve();
+        },
+      });
     });
-  });
+  } catch {
+    clearUser();
+  }
 }
 
 export {};
