@@ -12,30 +12,45 @@ export function AuthCallbackPage() {
   useEffect(() => {
     (async () => {
       try {
+        console.log('[Auth Callback] 시작');
         const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+        console.log('[Auth Callback] getSession:', { sessionError, hasSession: !!sessionData.session });
         if (sessionError || !sessionData.session) {
           throw new Error('세션을 가져오지 못했습니다.');
         }
 
         const authUser = sessionData.session.user;
+        console.log('[Auth Callback] user:', { id: authUser.id, email: authUser.email });
+        console.log('[Auth Callback] user_metadata:', authUser.user_metadata);
+
         const nickname =
           (authUser.user_metadata?.nickname as string) ||
           (authUser.user_metadata?.name as string) ||
+          (authUser.user_metadata?.full_name as string) ||
+          (authUser.user_metadata?.preferred_username as string) ||
           '사용자';
         const email = authUser.email ?? null;
+        console.log('[Auth Callback] 추출값:', { nickname, email });
+
         const authUserObj = { id: authUser.id, nickname, email };
         setUser(authUserObj);
 
+        console.log('[Auth Callback] upsertUser 호출:', { id: authUser.id, nickname, email, marketingConsent });
         const dbUser = await upsertUser(authUser.id, nickname, marketingConsent, email ?? undefined);
+        console.log('[Auth Callback] upsertUser 결과:', dbUser);
+
         if (dbUser && residentKey) {
-          await saveFreeResult(dbUser.id, residentKey, { answers });
+          console.log('[Auth Callback] saveFreeResult 호출:', { userId: dbUser.id, residentKey });
+          const result = await saveFreeResult(dbUser.id, residentKey, { answers });
+          console.log('[Auth Callback] saveFreeResult 결과:', result);
         }
 
         const returnPage = loadReturnPage();
         clearReturnPage();
+        console.log('[Auth Callback] 이동:', returnPage || 'landing');
         setCurrentPage((returnPage as 'landing' | 'nickname' | 'result' | 'payment') || 'landing');
       } catch (err) {
-        console.error('[Auth] Callback failed:', err);
+        console.error('[Auth Callback] 실패:', err);
         setError(err instanceof Error ? err.message : '로그인에 실패했어요.');
       }
     })();
