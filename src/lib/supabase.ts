@@ -60,12 +60,12 @@ export interface QuestionRow {
 }
 
 export async function upsertUser(
-  kakaoId: number,
+  userId: string,
   nickname: string,
   marketing: { kakao: boolean; email: boolean },
   email?: string,
 ): Promise<UserRow | null> {
-  const id = String(kakaoId);
+  const id = String(userId);
   const { data, error } = await supabase
     .from('users')
     .upsert(

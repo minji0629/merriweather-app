@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { handleAuthCallback, loadReturnPage, clearReturnPage } from '@/lib/kakao';
-import { upsertUser, saveFreeResult } from '@/lib/supabase';
+import { supabase, upsertUser, saveFreeResult } from '@/lib/supabase';
+import { loadReturnPage, clearReturnPage } from '@/lib/authStorage';
 import { useApp } from '@/store/useApp';
 import { useAuth } from '@/store/useAuth';
 
@@ -10,25 +10,35 @@ export function AuthCallbackPage() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    handleAuthCallback()
-      .then(async (user) => {
-        setUser(user);
-        const dbUser = await upsertUser(
-          user.id,
-          user.nickname,
-          marketingConsent,
-        );
+    (async () => {
+      try {
+        const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+        if (sessionError || !sessionData.session) {
+          throw new Error('세션을 가져오지 못했습니다.');
+        }
+
+        const authUser = sessionData.session.user;
+        const nickname =
+          (authUser.user_metadata?.nickname as string) ||
+          (authUser.user_metadata?.name as string) ||
+          '사용자';
+        const email = authUser.email ?? null;
+        const authUserObj = { id: authUser.id, nickname, email };
+        setUser(authUserObj);
+
+        const dbUser = await upsertUser(authUser.id, nickname, marketingConsent, email ?? undefined);
         if (dbUser && residentKey) {
           await saveFreeResult(dbUser.id, residentKey, { answers });
         }
+
         const returnPage = loadReturnPage();
         clearReturnPage();
         setCurrentPage((returnPage as 'landing' | 'nickname' | 'result' | 'payment') || 'landing');
-      })
-      .catch((err) => {
-        console.error('[Kakao] Auth callback failed:', err);
+      } catch (err) {
+        console.error('[Auth] Callback failed:', err);
         setError(err instanceof Error ? err.message : '로그인에 실패했어요.');
-      });
+      }
+    })();
   }, [setCurrentPage, setUser, marketingConsent, residentKey, answers]);
 
   return (

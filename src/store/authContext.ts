@@ -1,5 +1,10 @@
 import { createContext } from 'react';
-import { KakaoUser } from '@/lib/kakao';
+
+export interface AuthUser {
+  id: string;
+  nickname: string;
+  email: string | null;
+}
 
 export interface MarketingConsent {
   kakao: boolean;
@@ -7,8 +12,8 @@ export interface MarketingConsent {
 }
 
 export interface AuthState {
-  user: KakaoUser | null;
-  setUser: (user: KakaoUser) => void;
+  user: AuthUser | null;
+  setUser: (user: AuthUser) => void;
   login: (returnPage?: string) => Promise<void>;
   logout: () => Promise<void>;
   showLogin: () => void;
