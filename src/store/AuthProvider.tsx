@@ -28,7 +28,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       provider: 'kakao',
       options: {
         redirectTo: window.location.origin + '/auth/callback',
-        scopes: 'profile_nickname',
+        queryParams: {
+          scope: 'profile_nickname',
+        },
       },
     });
   }, []);
