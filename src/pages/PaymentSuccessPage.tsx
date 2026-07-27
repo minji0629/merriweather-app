@@ -1,10 +1,13 @@
 import { useEffect } from 'react';
 import { useApp } from '@/store/useApp';
+import { useAuth } from '@/store/useAuth';
+import { savePurchase, markLatestResultPaid } from '@/lib/supabase';
 import { PageContainer } from '@/components/PageContainer';
 import { Check, Sparkles } from '@/components/Icons';
 
 export function PaymentSuccessPage() {
   const { setCurrentPage, residentKey } = useApp();
+  const { user } = useAuth();
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -14,20 +17,34 @@ export function PaymentSuccessPage() {
 
     const hasValidParams = paymentKey && orderId && amount;
 
+    if (hasValidParams && user) {
+      const productType = orderId.includes('expedition_plus')
+        ? '탐험권+추가질문'
+        : '탐험권';
+      savePurchase(
+        String(user.id),
+        productType,
+        Number(amount),
+        paymentKey,
+        orderId,
+      ).catch((err) => console.error('[Supabase] savePurchase failed:', err));
+      markLatestResultPaid(String(user.id)).catch((err) =>
+        console.error('[Supabase] markLatestResultPaid failed:', err),
+      );
+    }
+
     const timer = setTimeout(() => {
       if (hasValidParams && residentKey) {
         setCurrentPage('premium');
       } else if (hasValidParams && !residentKey) {
-        // Payment succeeded but state was lost — go home to restart journey
         window.location.href = '/';
       } else {
-        // No valid payment params — treat as failure
         setCurrentPage('payment');
       }
     }, 1500);
 
     return () => clearTimeout(timer);
-  }, [setCurrentPage, residentKey]);
+  }, [setCurrentPage, residentKey, user]);
 
   return (
     <PageContainer className="bg-base">

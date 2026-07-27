@@ -1,17 +1,26 @@
 import { useEffect, useState } from 'react';
 import { handleAuthCallback, loadReturnPage, clearReturnPage } from '@/lib/kakao';
+import { upsertUser, saveFreeResult } from '@/lib/supabase';
 import { useApp } from '@/store/useApp';
 import { useAuth } from '@/store/useAuth';
 
 export function AuthCallbackPage() {
-  const { setCurrentPage } = useApp();
-  const { setUser } = useAuth();
+  const { setCurrentPage, residentKey, answers } = useApp();
+  const { setUser, marketingConsent } = useAuth();
   const [error, setError] = useState('');
 
   useEffect(() => {
     handleAuthCallback()
-      .then((user) => {
+      .then(async (user) => {
         setUser(user);
+        const dbUser = await upsertUser(
+          user.id,
+          user.nickname,
+          marketingConsent,
+        );
+        if (dbUser && residentKey) {
+          await saveFreeResult(dbUser.id, residentKey, { answers });
+        }
         const returnPage = loadReturnPage();
         clearReturnPage();
         setCurrentPage((returnPage as 'landing' | 'nickname' | 'result' | 'payment') || 'landing');
@@ -20,7 +29,7 @@ export function AuthCallbackPage() {
         console.error('[Kakao] Auth callback failed:', err);
         setError(err instanceof Error ? err.message : '로그인에 실패했어요.');
       });
-  }, [setCurrentPage, setUser]);
+  }, [setCurrentPage, setUser, marketingConsent, residentKey, answers]);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-base px-6">
