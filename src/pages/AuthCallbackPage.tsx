@@ -47,8 +47,9 @@ export function AuthCallbackPage() {
 
         const returnPage = loadReturnPage();
         clearReturnPage();
-        console.log('[Auth Callback] 이동:', returnPage || 'landing');
-        setCurrentPage((returnPage as 'landing' | 'nickname' | 'result' | 'payment') || 'landing');
+        const targetPage = (returnPage as 'landing' | 'nickname' | 'result' | 'payment') || 'landing';
+        console.log('[Auth Callback] 이동:', targetPage);
+        setCurrentPage(targetPage);
       } catch (err) {
         console.error('[Auth Callback] 실패:', err);
         setError(err instanceof Error ? err.message : '로그인에 실패했어요.');
