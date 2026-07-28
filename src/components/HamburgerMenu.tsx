@@ -66,6 +66,12 @@ export function HamburgerMenu() {
               >
                 여행 시작하기
               </button>
+              <button
+                onClick={() => handleNavigate('archive')}
+                className="w-full text-left px-4 py-3 rounded-xl font-sans text-sm text-text hover:bg-point/5 transition-colors"
+              >
+                보관함
+              </button>
             </div>
 
             <div className="p-5 border-t border-[#E0DDD8]">

@@ -14,7 +14,8 @@ export type Page =
   | 'gift'
   | 'paymentSuccess'
   | 'paymentFail'
-  | 'authCallback';
+  | 'authCallback'
+  | 'archive';
 
 export interface Answer {
   questionId: number;

@@ -166,3 +166,17 @@ export async function markLatestResultPaid(userId: string): Promise<boolean> {
 
   return markResultPaid(latest.id);
 }
+
+export async function fetchUserResults(userId: string): Promise<ResultRow[]> {
+  const { data, error } = await supabase
+    .from('results')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('[Supabase] fetchUserResults error:', error.message);
+    return [];
+  }
+  return (data as ResultRow[]) ?? [];
+}
