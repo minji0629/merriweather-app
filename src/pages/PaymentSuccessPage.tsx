@@ -15,22 +15,44 @@ export function PaymentSuccessPage() {
     const orderId = params.get('orderId');
     const amount = params.get('amount');
 
+    console.log('[Payment Success] 파라미터:', { paymentKey, orderId, amount });
+    console.log('[Payment Success] 현재 사용자:', user ? { id: user.id, nickname: user.nickname } : null);
+
     const hasValidParams = paymentKey && orderId && amount;
 
-    if (hasValidParams && user) {
-      const productType = orderId.includes('expedition_plus')
+    if (!hasValidParams) {
+      console.warn('[Payment Success] 필수 파라미터 누락 - 저장 생략');
+    } else if (!user) {
+      console.warn('[Payment Success] 로그인된 사용자 없음 - 저장 생략');
+    } else {
+      const productType = orderId!.includes('expedition_plus')
         ? '탐험권+추가질문'
         : '탐험권';
+      console.log('[Payment Success] purchases insert 호출:', {
+        userId: user.id,
+        productType,
+        amount: Number(amount),
+        paymentKey,
+        orderId,
+      });
       savePurchase(
         String(user.id),
         productType,
         Number(amount),
-        paymentKey,
-        orderId,
-      ).catch((err) => console.error('[Supabase] savePurchase failed:', err));
-      markLatestResultPaid(String(user.id)).catch((err) =>
-        console.error('[Supabase] markLatestResultPaid failed:', err),
-      );
+        paymentKey!,
+        orderId!,
+      )
+        .then((result) => {
+          if (result) {
+            console.log('[Payment Success] purchases insert 성공:', result);
+          } else {
+            console.error('[Payment Success] purchases insert 실패: null 반환 (오류 발생)');
+          }
+        })
+        .catch((err) => console.error('[Payment Success] savePurchase 예외:', err));
+      markLatestResultPaid(String(user.id))
+        .then((ok) => console.log('[Payment Success] markLatestResultPaid 결과:', ok))
+        .catch((err) => console.error('[Payment Success] markLatestResultPaid 예외:', err));
     }
 
     const timer = setTimeout(() => {
