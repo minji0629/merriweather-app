@@ -41,7 +41,7 @@ export function NoticePage() {
                   메리웨더가 곧 여러분을 찾아갑니다.
                 </p>
                 <p className="font-sans text-sm text-text leading-relaxed">
-                  나를 찾는 여행, 기억의 숲에서 만나요.
+                  나를 찾아 떠나는 여행, 기억의 숲에서 만나요.
                 </p>
                 <p className="font-sans text-sm text-text-sub leading-relaxed">
                   2026년 8월 정식 오픈 예정입니다.

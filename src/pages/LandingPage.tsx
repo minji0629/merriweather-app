@@ -27,6 +27,9 @@ export function LandingPage() {
         <p className="font-batang text-sm text-white/70 mt-2 animate-fadeIn" style={{ animationDelay: '0.3s', opacity: 0 }}>
           Merriweather
         </p>
+        <p className="font-sans text-xs text-white/60 mt-1.5 animate-fadeIn" style={{ animationDelay: '0.45s', opacity: 0 }}>
+          나를 찾아 떠나는 여행
+        </p>
 
         {/* Spacer */}
         <div className="flex-1" />
