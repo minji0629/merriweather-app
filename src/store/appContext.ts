@@ -28,6 +28,7 @@ export interface AppState {
   nickname: string;
   setNickname: (name: string) => void;
   currentPage: Page;
+  previousPage: Page | null;
   setCurrentPage: (page: Page) => void;
   answers: Answer[];
   addAnswer: (answer: Answer) => void;

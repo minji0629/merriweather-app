@@ -180,3 +180,16 @@ export async function fetchUserResults(userId: string): Promise<ResultRow[]> {
   }
   return (data as ResultRow[]) ?? [];
 }
+
+export async function deleteResult(resultId: string): Promise<boolean> {
+  const { error } = await supabase
+    .from('results')
+    .delete()
+    .eq('id', resultId);
+
+  if (error) {
+    console.error('[Supabase] deleteResult error:', error.message);
+    return false;
+  }
+  return true;
+}

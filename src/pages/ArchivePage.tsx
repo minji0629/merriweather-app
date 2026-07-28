@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { useApp } from '@/store/useApp';
 import { useAuth } from '@/store/useAuth';
 import { PageContainer } from '@/components/PageContainer';
-import { Sparkles, Compass, Lock } from '@/components/Icons';
-import { supabase, fetchUserResults, ResultRow } from '@/lib/supabase';
+import { Sparkles, Compass, Lock, X } from '@/components/Icons';
+import { supabase, fetchUserResults, deleteResult, ResultRow } from '@/lib/supabase';
 import { RESIDENTS } from '@/constants/residents';
 import type { ResidentKey } from '@/constants/questions';
 
@@ -19,6 +19,13 @@ export function ArchivePage() {
   const { setCurrentPage } = useApp();
   const { user, login } = useAuth();
   const [results, setResults] = useState<ResultRow[] | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const loadResults = async (userId: string) => {
+    const rows = await fetchUserResults(userId);
+    setResults(rows);
+  };
 
   useEffect(() => {
     if (!user) return;
@@ -27,11 +34,23 @@ export function ArchivePage() {
       const { data: sessionData } = await supabase.auth.getSession();
       if (!mounted) return;
       const userId = sessionData.session?.user.id ?? user.id;
-      const rows = await fetchUserResults(userId);
-      if (mounted) setResults(rows);
+      await loadResults(userId);
     })();
     return () => { mounted = false; };
   }, [user]);
+
+  const handleDeleteConfirm = async () => {
+    if (!deletingId || !user) return;
+    setIsDeleting(true);
+    const ok = await deleteResult(deletingId);
+    setIsDeleting(false);
+    if (ok) {
+      setDeletingId(null);
+      const { data: sessionData } = await supabase.auth.getSession();
+      const userId = sessionData.session?.user.id ?? user.id;
+      await loadResults(userId);
+    }
+  };
 
   // 비로그인
   if (!user) {
@@ -149,6 +168,14 @@ export function ArchivePage() {
                           탐험권
                         </span>
                       )}
+                      <button
+                        onClick={() => setDeletingId(row.id)}
+                        className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-text-sub
+                                   hover:bg-red-50 hover:text-red-500 transition-all duration-300 active:scale-90"
+                        aria-label="삭제"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
                     </div>
 
                     <div className="flex gap-2">
@@ -201,6 +228,40 @@ export function ArchivePage() {
           </button>
         </div>
       </div>
+
+      {/* 삭제 확인 모달 */}
+      {deletingId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-6">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => !isDeleting && setDeletingId(null)} />
+          <div className="relative w-full max-w-sm bg-base rounded-3xl shadow-2xl border border-[#E0DDD8] animate-scaleIn p-6 text-center">
+            <div className="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4">
+              <X className="w-7 h-7 text-red-500" />
+            </div>
+            <h2 className="font-batang text-xl text-text mb-2">이 여행 기록을 삭제할까요?</h2>
+            <p className="font-sans text-sm text-text-sub mb-6">
+              삭제한 기록은 다시 볼 수 없어요.
+            </p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setDeletingId(null)}
+                disabled={isDeleting}
+                className="flex-1 py-3.5 bg-white border border-[#E0DDD8] rounded-2xl font-sans font-medium text-sm text-text
+                           hover:bg-base transition-all duration-300 active:scale-95 disabled:opacity-50"
+              >
+                취소
+              </button>
+              <button
+                onClick={handleDeleteConfirm}
+                disabled={isDeleting}
+                className="flex-1 py-3.5 bg-red-500 text-white rounded-2xl font-sans font-bold text-sm
+                           shadow-lg transition-all duration-300 hover:bg-red-600 active:scale-95 disabled:opacity-50"
+              >
+                {isDeleting ? '삭제 중...' : '삭제하기'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </PageContainer>
   );
 }

@@ -10,7 +10,7 @@ import { Share2, Send, Sparkles } from '@/components/Icons';
 const QUESTION_LIMIT = 3;
 
 export function PremiumResultPage() {
-  const { nickname, setCurrentPage, residentKey, restart } = useApp();
+  const { nickname, setCurrentPage, residentKey, restart, previousPage } = useApp();
   const [showShareModal, setShowShareModal] = useState(false);
   const [showExtraModal, setShowExtraModal] = useState(false);
   const [question, setQuestion] = useState('');
@@ -51,12 +51,21 @@ export function PremiumResultPage() {
         <div className="px-6 pt-10 pb-8">
           {/* Top bar */}
           <div className="flex items-center justify-between mb-6">
-            <button
-              onClick={() => setCurrentPage('result')}
-              className="text-sm font-sans text-text-sub hover:text-text transition-colors"
-            >
-              ← 목록
-            </button>
+            {previousPage === 'archive' ? (
+              <button
+                onClick={() => setCurrentPage('archive')}
+                className="text-sm font-sans text-text-sub hover:text-text transition-colors"
+              >
+                ← 보관함으로
+              </button>
+            ) : (
+              <button
+                onClick={() => setCurrentPage('result')}
+                className="text-sm font-sans text-text-sub hover:text-text transition-colors"
+              >
+                ← 목록
+              </button>
+            )}
             <button
               onClick={() => setShowShareModal(true)}
               className="flex items-center gap-1.5 px-4 py-2 text-sm font-sans text-text-sub rounded-full bg-white border border-[#E0DDD8] hover:border-point hover:text-point transition-all duration-300"

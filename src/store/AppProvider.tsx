@@ -39,9 +39,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const persisted = useMemo(loadPersistedState, []);
 
   const [nickname, setNickname] = useState(persisted.nickname);
-  const [currentPage, setCurrentPage] = useState<Page>(detectInitialPage());
+  const [currentPage, setCurrentPageState] = useState<Page>(detectInitialPage());
+  const [previousPage, setPreviousPage] = useState<Page | null>(null);
   const [answers, setAnswers] = useState<Answer[]>(persisted.answers);
   const [residentKey, setResidentKey] = useState<ResidentKey | null>(persisted.residentKey);
+
+  const setCurrentPage = useCallback((page: Page) => {
+    setCurrentPageState((prev) => {
+      setPreviousPage(prev);
+      return page;
+    });
+  }, []);
 
   useEffect(() => {
     try {
@@ -81,6 +89,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     nickname,
     setNickname,
     currentPage,
+    previousPage,
     setCurrentPage,
     answers,
     addAnswer,

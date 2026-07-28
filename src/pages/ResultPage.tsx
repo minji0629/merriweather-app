@@ -7,7 +7,7 @@ import { getResidentProfile, withNickname } from '@/constants/residents';
 import { Lock, Share2, Sparkles, Check, Gift } from '@/components/Icons';
 
 export function ResultPage() {
-  const { nickname, setCurrentPage, residentKey, previewMode, restart } = useApp();
+  const { nickname, setCurrentPage, residentKey, previewMode, restart, previousPage } = useApp();
   const { user, login } = useAuth();
   const { currentPage } = useApp();
   const [showSavePrompt, setShowSavePrompt] = useState(false);
@@ -27,8 +27,18 @@ export function ResultPage() {
     <PageContainer className="bg-base">
       <div className="overflow-y-auto scrollbar-hide min-h-screen">
         <div className="px-6 pt-10 pb-8">
-          {/* Share button */}
-          <div className="flex justify-end mb-4">
+          {/* Top bar */}
+          <div className="flex items-center justify-between mb-4">
+            {previousPage === 'archive' ? (
+              <button
+                onClick={() => setCurrentPage('archive')}
+                className="text-sm font-sans text-text-sub hover:text-text transition-colors"
+              >
+                ← 보관함으로
+              </button>
+            ) : (
+              <span />
+            )}
             <button className="flex items-center gap-1.5 px-4 py-2 text-sm font-sans text-text-sub rounded-full bg-white border border-[#E0DDD8] hover:border-point hover:text-point transition-all duration-300">
               <Share2 className="w-3.5 h-3.5" />
               공유하기
