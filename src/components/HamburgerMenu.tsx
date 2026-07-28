@@ -21,9 +21,14 @@ export function HamburgerMenu() {
     setOpen(false);
   };
 
-  const handleNavigate = (page: 'landing' | 'nickname') => {
+  const handleNavigate = (page: 'landing' | 'nickname' | 'archive' | 'gift') => {
     setOpen(false);
     setCurrentPage(page);
+  };
+
+  const handleExternal = (url: string) => {
+    setOpen(false);
+    window.open(url, '_blank', 'noopener,noreferrer');
   };
 
   return (
@@ -53,31 +58,11 @@ export function HamburgerMenu() {
               </button>
             </div>
 
-            <div className="flex-1 p-5 flex flex-col gap-2">
-              <button
-                onClick={() => handleNavigate('landing')}
-                className="w-full text-left px-4 py-3 rounded-xl font-sans text-sm text-text hover:bg-point/5 transition-colors"
-              >
-                홈
-              </button>
-              <button
-                onClick={() => handleNavigate('nickname')}
-                className="w-full text-left px-4 py-3 rounded-xl font-sans text-sm text-text hover:bg-point/5 transition-colors"
-              >
-                여행 시작하기
-              </button>
-              <button
-                onClick={() => handleNavigate('archive')}
-                className="w-full text-left px-4 py-3 rounded-xl font-sans text-sm text-text hover:bg-point/5 transition-colors"
-              >
-                보관함
-              </button>
-            </div>
-
-            <div className="p-5 border-t border-[#E0DDD8]">
+            <div className="flex-1 p-5 flex flex-col gap-2 overflow-y-auto scrollbar-hide">
+              {/* 로그인 / 로그아웃 */}
               {user ? (
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 px-4 py-2">
                     <div className="w-8 h-8 rounded-full bg-point/15 flex items-center justify-center">
                       <span className="font-batang text-sm text-point-dark">
                         {user.nickname.charAt(0)}
@@ -87,8 +72,8 @@ export function HamburgerMenu() {
                   </div>
                   <button
                     onClick={handleLogoutClick}
-                    className="w-full py-3 bg-white border border-[#E0DDD8] rounded-xl font-sans text-sm text-text-sub
-                               hover:text-text hover:border-point transition-all"
+                    className="w-full text-left px-4 py-3 rounded-xl font-sans text-sm text-text-sub
+                               hover:bg-point/5 hover:text-text transition-colors"
                   >
                     로그아웃
                   </button>
@@ -96,12 +81,64 @@ export function HamburgerMenu() {
               ) : (
                 <button
                   onClick={handleLoginClick}
-                  className="w-full py-3 bg-[#FEE500] text-[#3C1E1E] rounded-xl font-sans font-bold text-sm
-                             shadow-sm hover:shadow-md transition-all active:scale-95"
+                  className="w-full text-left px-4 py-3 rounded-xl font-sans text-sm text-text
+                             hover:bg-point/5 transition-colors"
                 >
-                  카카오 로그인
+                  로그인
                 </button>
               )}
+
+              <div className="my-1 h-px bg-[#E0DDD8]" />
+
+              {/* 보관함 */}
+              <button
+                onClick={() => handleNavigate('archive')}
+                className="w-full text-left px-4 py-3 rounded-xl font-sans text-sm text-text hover:bg-point/5 transition-colors"
+              >
+                보관함
+              </button>
+
+              {/* 선물하기 */}
+              <button
+                onClick={() => handleNavigate('gift')}
+                className="w-full text-left px-4 py-3 rounded-xl font-sans text-sm text-text hover:bg-point/5 transition-colors"
+              >
+                선물하기
+              </button>
+
+              <div className="my-1 h-px bg-[#E0DDD8]" />
+
+              {/* 공지사항 */}
+              <button
+                onClick={() => handleExternal('https://merriweather.kr/notice')}
+                className="w-full text-left px-4 py-3 rounded-xl font-sans text-sm text-text hover:bg-point/5 transition-colors"
+              >
+                공지사항
+              </button>
+
+              {/* 문의하기 */}
+              <button
+                onClick={() => handleExternal('https://merriweather.kr/contact')}
+                className="w-full text-left px-4 py-3 rounded-xl font-sans text-sm text-text hover:bg-point/5 transition-colors"
+              >
+                문의하기
+              </button>
+
+              {/* 이용약관 */}
+              <button
+                onClick={() => handleExternal('https://merriweather.kr/terms')}
+                className="w-full text-left px-4 py-3 rounded-xl font-sans text-sm text-text hover:bg-point/5 transition-colors"
+              >
+                이용약관
+              </button>
+
+              {/* 개인정보처리방침 */}
+              <button
+                onClick={() => handleExternal('https://merriweather.kr/privacy')}
+                className="w-full text-left px-4 py-3 rounded-xl font-sans text-sm text-text hover:bg-point/5 transition-colors"
+              >
+                개인정보처리방침
+              </button>
             </div>
           </div>
         </>
