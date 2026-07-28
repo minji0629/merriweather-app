@@ -1,12 +1,14 @@
-import { ReactNode, useState, useCallback, useMemo } from 'react';
+import { ReactNode, useState, useCallback, useMemo, useEffect } from 'react';
 import { AuthContext, AuthState, AuthUser, MarketingConsent } from '@/store/authContext';
-import { supabase } from '@/lib/supabase';
+import { supabase, upsertUser } from '@/lib/supabase';
 import {
   hasMarketingConsent,
   setMarketingConsented,
   loadMarketingDetail,
   saveMarketingDetail,
   saveReturnPage,
+  saveUserId,
+  clearUserId,
 } from '@/lib/authStorage';
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -17,6 +19,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const setUser = useCallback((u: AuthUser) => {
     setUserState(u);
+    saveUserId(u.id);
     if (!hasMarketingConsent()) {
       setMarketingOpen(true);
     }
@@ -40,6 +43,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(async () => {
     await supabase.auth.signOut();
     setUserState(null);
+    clearUserId();
   }, []);
 
   const showLogin = useCallback(() => setLoginOpen(true), []);
@@ -52,6 +56,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     saveMarketingDetail(consent);
     setMarketingConsented(true);
   }, []);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (!mounted) return;
+      if (sessionData.session) {
+        const authUser = sessionData.session.user;
+        const nickname =
+          (authUser.user_metadata?.nickname as string) ||
+          (authUser.user_metadata?.name as string) ||
+          (authUser.user_metadata?.full_name as string) ||
+          (authUser.user_metadata?.preferred_username as string) ||
+          '사용자';
+        setUser({ id: authUser.id, nickname, email: authUser.email ?? null });
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, [setUser]);
 
   const value: AuthState = useMemo(
     () => ({

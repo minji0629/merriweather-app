@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react';
-import { supabase, upsertUser, saveFreeResult } from '@/lib/supabase';
-import { loadReturnPage, clearReturnPage } from '@/lib/authStorage';
+import { supabase, upsertUser, saveFreeResult, savePurchase, markLatestResultPaid } from '@/lib/supabase';
+import {
+  loadReturnPage,
+  clearReturnPage,
+  loadPendingPurchase,
+  clearPendingPurchase,
+} from '@/lib/authStorage';
 import { useApp } from '@/store/useApp';
 import { useAuth } from '@/store/useAuth';
 
@@ -45,9 +50,30 @@ export function AuthCallbackPage() {
           console.log('[Auth Callback] saveFreeResult 결과:', result);
         }
 
+        // 대기 중인 결제 저장 처리
+        const pending = loadPendingPurchase();
+        if (pending) {
+          console.log('[Auth Callback] 대기 중 결제 저장:', pending);
+          try {
+            const result = await savePurchase(
+              authUser.id,
+              pending.productType,
+              pending.amount,
+              pending.paymentKey,
+              pending.orderId,
+            );
+            console.log('[Auth Callback] pending purchases insert 결과:', result);
+            await markLatestResultPaid(authUser.id);
+            console.log('[Auth Callback] pending markLatestResultPaid 완료');
+          } catch (err) {
+            console.error('[Auth Callback] pending 결제 저장 실패:', err);
+          }
+          clearPendingPurchase();
+        }
+
         const returnPage = loadReturnPage();
         clearReturnPage();
-        const targetPage = (returnPage as 'landing' | 'nickname' | 'result' | 'payment') || 'landing';
+        const targetPage = (returnPage as 'landing' | 'nickname' | 'result' | 'payment' | 'authCallback') || 'landing';
         console.log('[Auth Callback] 이동:', targetPage);
         setCurrentPage(targetPage);
       } catch (err) {
