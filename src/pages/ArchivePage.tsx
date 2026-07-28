@@ -42,12 +42,12 @@ export function ArchivePage() {
   const handleDeleteConfirm = async () => {
     if (!deletingId || !user) return;
     setIsDeleting(true);
-    const ok = await deleteResult(deletingId);
+    const { data: sessionData } = await supabase.auth.getSession();
+    const userId = sessionData.session?.user.id ?? user.id;
+    const ok = await deleteResult(deletingId, userId);
     setIsDeleting(false);
     if (ok) {
       setDeletingId(null);
-      const { data: sessionData } = await supabase.auth.getSession();
-      const userId = sessionData.session?.user.id ?? user.id;
       await loadResults(userId);
     }
   };

@@ -181,15 +181,20 @@ export async function fetchUserResults(userId: string): Promise<ResultRow[]> {
   return (data as ResultRow[]) ?? [];
 }
 
-export async function deleteResult(resultId: string): Promise<boolean> {
-  const { error } = await supabase
+export async function deleteResult(resultId: string, userId: string): Promise<boolean> {
+  console.log('[Delete Result] 1. 삭제할 result id:', resultId, '/ user_id:', userId);
+  console.log('[Delete Result] 2. Supabase delete 호출...');
+  const { data, error } = await supabase
     .from('results')
     .delete()
-    .eq('id', resultId);
+    .eq('id', resultId)
+    .eq('user_id', userId)
+    .select();
 
   if (error) {
-    console.error('[Supabase] deleteResult error:', error.message);
+    console.error('[Delete Result] 3. 삭제 실패:', error.message, '(code:', error.code + ')');
     return false;
   }
+  console.log('[Delete Result] 3. 삭제 완료. 삭제된 행 수:', data?.length ?? 0);
   return true;
 }
