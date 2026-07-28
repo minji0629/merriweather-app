@@ -21,7 +21,7 @@ export function HamburgerMenu() {
     setOpen(false);
   };
 
-  const handleNavigate = (page: 'landing' | 'nickname' | 'archive' | 'gift') => {
+  const handleNavigate = (page: 'landing' | 'nickname' | 'archive' | 'gift' | 'notice' | 'contact') => {
     setOpen(false);
     setCurrentPage(page);
   };
@@ -110,7 +110,7 @@ export function HamburgerMenu() {
 
               {/* 공지사항 */}
               <button
-                onClick={() => handleExternal('https://merriweather.kr/notice')}
+                onClick={() => handleNavigate('notice')}
                 className="w-full text-left px-4 py-3 rounded-xl font-sans text-sm text-text hover:bg-point/5 transition-colors"
               >
                 공지사항
@@ -118,7 +118,7 @@ export function HamburgerMenu() {
 
               {/* 문의하기 */}
               <button
-                onClick={() => handleExternal('https://merriweather.kr/contact')}
+                onClick={() => handleNavigate('contact')}
                 className="w-full text-left px-4 py-3 rounded-xl font-sans text-sm text-text hover:bg-point/5 transition-colors"
               >
                 문의하기

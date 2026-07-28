@@ -15,7 +15,9 @@ export type Page =
   | 'paymentSuccess'
   | 'paymentFail'
   | 'authCallback'
-  | 'archive';
+  | 'archive'
+  | 'notice'
+  | 'contact';
 
 export interface Answer {
   questionId: number;
