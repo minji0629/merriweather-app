@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useApp } from '@/store/useApp';
 import { PageContainer } from '@/components/PageContainer';
 import { ComingSoonModal } from '@/components/ComingSoonModal';
@@ -6,6 +6,7 @@ import { ExtraQuestionsModal } from '@/components/ExtraQuestionsModal';
 import { RESIDENT_CARD, AI_SECTION_2, AI_LETTER } from '@/constants/images';
 import { getResidentProfile, withNickname } from '@/constants/residents';
 import { Share2, Send, Sparkles } from '@/components/Icons';
+import { generateGaul, generateLetter, answerQuestion } from '@/lib/claude';
 
 const QUESTION_LIMIT = 3;
 
@@ -18,7 +19,54 @@ export function PremiumResultPage() {
   const [isAsking, setIsAsking] = useState(false);
   const [questionCount, setQuestionCount] = useState(0);
 
+  const [gaulText, setGaulText] = useState('');
+  const [gaulLoading, setGaulLoading] = useState(false);
+  const [gaulError, setGaulError] = useState(false);
+
+  const [letterText, setLetterText] = useState('');
+  const [letterLoading, setLetterLoading] = useState(false);
+  const [letterError, setLetterError] = useState(false);
+
   const RESULT = residentKey ? getResidentProfile(residentKey) : null;
+
+  useEffect(() => {
+    if (!RESULT || !residentKey) return;
+
+    let cancelled = false;
+
+    const runGaul = async () => {
+      setGaulLoading(true);
+      setGaulError(false);
+      try {
+        const text = await generateGaul(nickname || '여행자', residentKey);
+        if (!cancelled) setGaulText(text);
+      } catch {
+        if (!cancelled) setGaulError(true);
+      } finally {
+        if (!cancelled) setGaulLoading(false);
+      }
+    };
+
+    const runLetter = async () => {
+      setLetterLoading(true);
+      setLetterError(false);
+      try {
+        const text = await generateLetter(nickname || '여행자', residentKey);
+        if (!cancelled) setLetterText(text);
+      } catch {
+        if (!cancelled) setLetterError(true);
+      } finally {
+        if (!cancelled) setLetterLoading(false);
+      }
+    };
+
+    runGaul();
+    runLetter();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [RESULT, residentKey, nickname]);
 
   if (!RESULT) {
     return (
@@ -33,16 +81,76 @@ export function PremiumResultPage() {
   const firstChar = RESULT.name.charAt(RESULT.name.length - 1);
   const remainingQuestions = QUESTION_LIMIT - questionCount;
 
-  const handleAsk = () => {
-    if (!question.trim() || questionCount >= QUESTION_LIMIT) return;
+  const handleAsk = async () => {
+    if (!question.trim() || questionCount >= QUESTION_LIMIT || !residentKey) return;
     setIsAsking(true);
-    setTimeout(() => {
-      setLuAnswer(
-        '좋은 질문이에요. 당신이 그렇게 느끼는 건, 당신이 더 깊이 바라보고 있기 때문이에요. 천천히 가도 괜찮아요. 숲은 기다려주니까요.',
-      );
+    setLuAnswer('');
+    try {
+      const text = await answerQuestion(nickname || '여행자', residentKey, question.trim());
+      setLuAnswer(text);
       setQuestionCount((c) => c + 1);
+    } catch {
+      setLuAnswer('지금은 루가 답변을 드리기 어려워요. 잠시 후 다시 시도해줘.');
+    } finally {
       setIsAsking(false);
-    }, 1500);
+      setQuestion('');
+    }
+  };
+
+  const GaulContent = () => {
+    if (gaulLoading) {
+      return (
+        <div className="flex items-center justify-center py-6">
+          <div className="flex flex-col items-center gap-2">
+            <Sparkles className="w-5 h-5 text-point animate-pulse" />
+            <p className="font-sans text-sm text-text-sub">루가 생각하는 중이에요...</p>
+          </div>
+        </div>
+      );
+    }
+    if (gaulError) {
+      return (
+        <p className="font-sans text-sm text-text-sub leading-relaxed text-center py-4">
+          지금은 결을 만들기 어려워요. 잠시 후 다시 확인해줘.
+        </p>
+      );
+    }
+    if (gaulText) {
+      return (
+        <p className="font-batang text-sm text-text leading-loose whitespace-pre-line">
+          {gaulText}
+        </p>
+      );
+    }
+    return null;
+  };
+
+  const LetterContent = () => {
+    if (letterLoading) {
+      return (
+        <div className="flex items-center justify-center py-6">
+          <div className="flex flex-col items-center gap-2">
+            <Sparkles className="w-5 h-5 text-point animate-pulse" />
+            <p className="font-sans text-sm text-text-sub">루가 생각하는 중이에요...</p>
+          </div>
+        </div>
+      );
+    }
+    if (letterError) {
+      return (
+        <p className="font-batang text-base text-text leading-loose text-center py-4">
+          지금은 편지를 쓰기 어려워요. 잠시 후 다시 확인해줘.
+        </p>
+      );
+    }
+    if (letterText) {
+      return (
+        <p className="font-batang text-base text-text leading-loose whitespace-pre-line">
+          {letterText}
+        </p>
+      );
+    }
+    return null;
   };
 
   return (
@@ -116,8 +224,12 @@ export function PremiumResultPage() {
                 <h2 className="font-batang text-lg text-text">{section.title}</h2>
               </div>
               <div className="p-5 bg-white rounded-2xl border border-[#E0DDD8]">
-                {section.ai && AI_SECTION_2 ? (
-                  <img src={AI_SECTION_2} alt={section.title} className="w-full rounded-xl" />
+                {section.ai ? (
+                  AI_SECTION_2 ? (
+                    <img src={AI_SECTION_2} alt={section.title} className="w-full rounded-xl" />
+                  ) : (
+                    <GaulContent />
+                  )
                 ) : (
                   <p className="font-sans text-sm text-text leading-relaxed whitespace-pre-line">
                     {withNickname(section.body, nickname)}
@@ -142,9 +254,7 @@ export function PremiumResultPage() {
               {AI_LETTER ? (
                 <img src={AI_LETTER} alt="루의 편지" className="w-full rounded-xl" />
               ) : (
-                <p className="font-batang text-base text-text leading-loose whitespace-pre-line">
-                  {withNickname(RESULT.premium[8].body, nickname)}
-                </p>
+                <LetterContent />
               )}
             </div>
           </div>
@@ -197,13 +307,23 @@ export function PremiumResultPage() {
                   )}
                 </button>
               </div>
-              {luAnswer && (
+              {isAsking && (
+                <div className="p-4 bg-letter rounded-xl animate-fadeIn mb-2">
+                  <div className="flex items-center gap-2">
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-point/15 flex items-center justify-center">
+                      <Sparkles className="w-4 h-4 text-point animate-pulse" />
+                    </div>
+                    <p className="font-sans text-sm text-text-sub">루가 생각하는 중이에요...</p>
+                  </div>
+                </div>
+              )}
+              {luAnswer && !isAsking && (
                 <div className="p-4 bg-letter rounded-xl animate-fadeIn">
                   <div className="flex items-start gap-2">
                     <div className="flex-shrink-0 w-8 h-8 rounded-full bg-point/15 flex items-center justify-center">
                       <span className="text-sm font-batang text-point-dark">루</span>
                     </div>
-                    <p className="font-batang text-sm text-text leading-relaxed pt-1">{luAnswer}</p>
+                    <p className="font-batang text-sm text-text leading-relaxed pt-1 whitespace-pre-line">{luAnswer}</p>
                   </div>
                 </div>
               )}
