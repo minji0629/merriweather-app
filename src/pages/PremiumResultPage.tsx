@@ -236,83 +236,91 @@ export function PremiumResultPage() {
             <p className="font-sans text-sm text-text-sub">{RESULT.intro}</p>
           </div>
 
-          {/* Section 1: 당신 안에 흐르는 결 */}
-          <div className="mb-8 animate-fadeUp" style={{ animationDelay: '0.3s', opacity: 0 }}>
-            <h2 className="font-batang text-lg text-point-dark mb-4 flex items-center gap-2">
-              <Sparkles className="w-4 h-4" />
-              당신 안에 흐르는 결
-            </h2>
-            <div className="p-5 bg-white rounded-xl border border-[#E0DDD8]">
-              {renderGaul()}
-            </div>
-          </div>
+          {/* All 10 premium sections */}
+          {RESULT.premium.map((section, idx) => {
+            const delay = `${0.3 + idx * 0.1}s`;
+            const isGaul = section.title === '당신 안에 흐르는 결';
+            const isLetter = section.title === '루의 편지';
+            const isQuestion = section.title === '루에게 질문하기';
 
-          {/* Section 2: 루의 편지 */}
-          <div className="mb-8 animate-fadeUp" style={{ animationDelay: '0.4s', opacity: 0 }}>
-            <h2 className="font-batang text-lg text-point-dark mb-4">루의 편지</h2>
-            <div className="p-6 bg-letter rounded-2xl border border-[#E0DDD8]">
-              {renderLetter()}
-            </div>
-          </div>
+            return (
+              <div key={idx} className="mb-8 animate-fadeUp" style={{ animationDelay: delay, opacity: 0 }}>
+                {isQuestion ? (
+                  <>
+                    <div className="flex items-center justify-between mb-4">
+                      <h2 className="font-batang text-lg text-point-dark">루에게 질문하기</h2>
+                      <span className="text-xs font-sans text-text-sub">
+                        남은 횟수 {remainingCount}회
+                      </span>
+                    </div>
+                    <div className="p-5 bg-white rounded-xl border border-[#E0DDD8]">
+                      <div className="flex gap-2 mb-4">
+                        <input
+                          type="text"
+                          value={question}
+                          onChange={(e) => setQuestion(e.target.value)}
+                          placeholder="루에게 물어보고 싶은 것을 적어줘"
+                          className="flex-1 px-4 py-3 text-sm font-sans text-text bg-base rounded-xl border border-[#E0DDD8] focus:border-point focus:outline-none transition-colors"
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') handleAsk();
+                          }}
+                        />
+                        <button
+                          onClick={handleAsk}
+                          disabled={isAsking || !question.trim() || remainingCount <= 0}
+                          className="px-4 py-3 bg-point text-white rounded-xl font-sans text-sm
+                                     transition-all duration-300 hover:bg-point-dark active:scale-95
+                                     disabled:opacity-40 disabled:cursor-not-allowed
+                                     flex items-center gap-1.5"
+                        >
+                          <Send className="w-4 h-4" />
+                          보내기
+                        </button>
+                      </div>
 
-          {/* Section 3: 루에게 질문하기 */}
-          <div className="mb-8 animate-fadeUp" style={{ animationDelay: '0.5s', opacity: 0 }}>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="font-batang text-lg text-point-dark">루에게 질문하기</h2>
-              <span className="text-xs font-sans text-text-sub">
-                남은 횟수 {remainingCount}회
-              </span>
-            </div>
-            <div className="p-5 bg-white rounded-xl border border-[#E0DDD8]">
-              <div className="flex gap-2 mb-4">
-                <input
-                  type="text"
-                  value={question}
-                  onChange={(e) => setQuestion(e.target.value)}
-                  placeholder="루에게 물어보고 싶은 것을 적어줘"
-                  className="flex-1 px-4 py-3 text-sm font-sans text-text bg-base rounded-xl border border-[#E0DDD8] focus:border-point focus:outline-none transition-colors"
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') handleAsk();
-                  }}
-                />
-                <button
-                  onClick={handleAsk}
-                  disabled={isAsking || !question.trim() || remainingCount <= 0}
-                  className="px-4 py-3 bg-point text-white rounded-xl font-sans text-sm
-                             transition-all duration-300 hover:bg-point-dark active:scale-95
-                             disabled:opacity-40 disabled:cursor-not-allowed
-                             flex items-center gap-1.5"
-                >
-                  <Send className="w-4 h-4" />
-                  보내기
-                </button>
+                      {isAsking && (
+                        <div className="flex items-center justify-center py-4">
+                          <p className="font-batang text-sm text-text-sub">루가 생각하는 중이에요...</p>
+                        </div>
+                      )}
+
+                      {askError && (
+                        <p className="font-batang text-sm text-text-sub leading-relaxed text-center py-4">
+                          지금은 답하기 어려워요. 잠시 후 다시 시도해줘.
+                        </p>
+                      )}
+
+                      {luAnswer && !isAsking && (
+                        <div className="mt-2 p-4 bg-base rounded-xl border border-[#E0DDD8]">
+                          <p className="font-batang text-sm text-text leading-relaxed pt-1 whitespace-pre-line">{luAnswer}</p>
+                        </div>
+                      )}
+
+                      {remainingCount <= 0 && !luAnswer && !isAsking && (
+                        <p className="font-batang text-sm text-text-sub text-center py-4">
+                          남은 질문 횟수가 없어요. 추가 질문권을 구매하면 더 물어볼 수 있어요.
+                        </p>
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <h2 className="font-batang text-lg text-point-dark mb-4 flex items-center gap-2">
+                      {section.ai && <Sparkles className="w-4 h-4" />}
+                      {section.title}
+                    </h2>
+                    <div className={isLetter ? 'p-6 bg-letter rounded-2xl border border-[#E0DDD8]' : 'p-5 bg-white rounded-xl border border-[#E0DDD8]'}>
+                      {isGaul ? renderGaul() : isLetter ? renderLetter() : (
+                        <p className="font-batang text-sm text-text leading-loose whitespace-pre-line">
+                          {withNickname(section.body, nickname || '여행자')}
+                        </p>
+                      )}
+                    </div>
+                  </>
+                )}
               </div>
-
-              {isAsking && (
-                <div className="flex items-center justify-center py-4">
-                  <p className="font-batang text-sm text-text-sub">루가 생각하는 중이에요...</p>
-                </div>
-              )}
-
-              {askError && (
-                <p className="font-batang text-sm text-text-sub leading-relaxed text-center py-4">
-                  지금은 답하기 어려워요. 잠시 후 다시 시도해줘.
-                </p>
-              )}
-
-              {luAnswer && !isAsking && (
-                <div className="mt-2 p-4 bg-base rounded-xl border border-[#E0DDD8]">
-                  <p className="font-batang text-sm text-text leading-relaxed pt-1 whitespace-pre-line">{luAnswer}</p>
-                </div>
-              )}
-
-              {remainingCount <= 0 && !luAnswer && !isAsking && (
-                <p className="font-batang text-sm text-text-sub text-center py-4">
-                  남은 질문 횟수가 없어요. 추가 질문권을 구매하면 더 물어볼 수 있어요.
-                </p>
-              )}
-            </div>
-          </div>
+            );
+          })}
 
           {/* Gift button */}
           <div className="mb-6 animate-fadeUp" style={{ animationDelay: '0.6s', opacity: 0 }}>

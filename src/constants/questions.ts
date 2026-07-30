@@ -212,10 +212,10 @@ export const QUESTIONS: Question[] = [
     chapterName: '숲속의 쉼터',
     question: '누군가 힘든 감정을 털어놓고 있다.\n너는 보통 어떤 사람이야?',
     choices: [
-      { text: '그 사람의 감정 안으로 함께 들어간다', scores: { D2: -2, D6: -2 } },
-      { text: '왜 그런 감정이 생겼는지 먼저 이해하려 한다', scores: { D2: 1, D6: -1 } },
-      { text: '조용히 곁에서 들어주는 편이다', scores: { D2: -1, D6: -2 } },
-      { text: '함께 해결책을 찾아보려 한다', scores: { D2: 2, D6: 2 } },
+      { text: '적극적으로 공감하며 함께 이야기를 나눈다', scores: { D1: 2, D6: -2 } },
+      { text: '조용히 옆에 있어주는 것으로 충분하다', scores: { D1: -2, D6: -1 } },
+      { text: '어떻게 해결할 수 있을지 함께 찾아본다', scores: { D1: 1, D6: 2 } },
+      { text: '어떻게 하면 나아질 수 있을지 혼자 조용히 생각해보게 된다', scores: { D1: -1, D6: 1 } },
     ],
   },
   // ── Chapter 5 — 깊은 숲 (Q16~Q20) ──

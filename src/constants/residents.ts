@@ -967,9 +967,9 @@ export const RESIDENTS: Record<ResidentKey, ResidentProfile> = {
     ],
     primary: [
       { dim: 'D1', sign: 1 },
+      { dim: 'D2', sign: -1 },
     ],
     secondary: [
-      { dim: 'D2', sign: -1 },
       { dim: 'D4', sign: 1 },
       { dim: 'D6', sign: -1 },
     ],
@@ -1129,12 +1129,12 @@ export const RESIDENTS: Record<ResidentKey, ResidentProfile> = {
       },
     ],
     primary: [
-      { dim: 'D5', sign: -1 },
       { dim: 'D4', sign: -1 },
+      { dim: 'D3', sign: 1 },
     ],
     secondary: [
-      { dim: 'D2', sign: -1 },
       { dim: 'D1', sign: -1 },
+      { dim: 'D2', sign: -1 },
     ],
   },
   sculptor: {
@@ -1292,12 +1292,12 @@ export const RESIDENTS: Record<ResidentKey, ResidentProfile> = {
       },
     ],
     primary: [
-      { dim: 'D5', sign: -1 },
       { dim: 'D6', sign: -1 },
+      { dim: 'D2', sign: -1 },
     ],
     secondary: [
-      { dim: 'D2', sign: -1 },
       { dim: 'D1', sign: -1 },
+      { dim: 'D5', sign: -1 },
     ],
   },
 };
@@ -1446,7 +1446,14 @@ export function calculateResidentDebug(answers: Answer[]): ResidentCalcDebug {
     const aP = RESIDENTS[a].primary.reduce((s, { dim, sign }) => s + sign * (dimScores[dim] || 0) * 2, 0);
     const bP = RESIDENTS[b].primary.reduce((s, { dim, sign }) => s + sign * (dimScores[dim] || 0) * 2, 0);
     if (aP !== bP) return bP - aP;
-    return (dimScores.D5 || 0) - (dimScores.D5 || 0);
+    const d5Weight = (k: ResidentKey) => {
+      const p = RESIDENTS[k].primary.find((d) => d.dim === 'D5');
+      if (p) return p.sign * (dimScores.D5 || 0) * 2;
+      const s = RESIDENTS[k].secondary.find((d) => d.dim === 'D5');
+      if (s) return s.sign * (dimScores.D5 || 0) * 1;
+      return 0;
+    };
+    return d5Weight(b) - d5Weight(a);
   });
 
   return {
