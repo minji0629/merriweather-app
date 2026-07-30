@@ -3,8 +3,8 @@ import { BusinessFooter } from '@/components/BusinessFooter';
 
 export function PageContainer({ children, className = '', footer = true }: { children: ReactNode; className?: string; footer?: boolean }) {
   return (
-    <div className={`relative w-full max-w-mobile min-h-screen mx-auto overflow-x-hidden flex flex-col ${className}`}>
-      <div className="flex-1 min-h-0">{children}</div>
+    <div className={`relative w-full max-w-mobile mx-auto overflow-x-hidden ${className}`}>
+      <div className="relative min-h-screen flex flex-col">{children}</div>
       {footer && <BusinessFooter />}
     </div>
   );

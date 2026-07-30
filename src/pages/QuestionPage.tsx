@@ -196,7 +196,7 @@ export function QuestionPage() {
   const showQuestion = phase === 'question' || phase === 'fadein';
 
   return (
-    <PageContainer className="bg-black" footer={false}>
+    <PageContainer className="bg-black">
       {/* Question view */}
       <div
         className="absolute inset-0 z-0 transition-opacity duration-500"

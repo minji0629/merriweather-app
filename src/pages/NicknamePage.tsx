@@ -15,7 +15,7 @@ export function NicknamePage() {
   };
 
   return (
-    <PageContainer className="bg-gradient-to-b from-purple-bg to-purple-bg-dark" footer={false}>
+    <PageContainer className="bg-gradient-to-b from-purple-bg to-purple-bg-dark">
       <div className="relative flex flex-col items-center flex-1 min-h-0 px-6 pt-32 pb-12">
         {/* Title */}
         <div className="text-center animate-fadeUp">

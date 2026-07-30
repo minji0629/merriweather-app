@@ -38,7 +38,7 @@ export function LuPage() {
   const isLast = lineIndex === DIALOGUES.length - 1;
 
   return (
-    <PageContainer className="bg-gradient-to-b from-[#F0FAF0] to-[#D4F0D0]" footer={false}>
+    <PageContainer className="bg-gradient-to-b from-[#F0FAF0] to-[#D4F0D0]">
       {/* Skip button - top right */}
       <button
         onClick={handleSkip}

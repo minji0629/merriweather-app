@@ -7,7 +7,7 @@ export function LandingPage() {
   const { setCurrentPage } = useApp();
 
   return (
-    <PageContainer className="bg-base" footer={false}>
+    <PageContainer className="bg-base">
       {/* Background image */}
       <div className="absolute inset-0 z-0">
         <img
