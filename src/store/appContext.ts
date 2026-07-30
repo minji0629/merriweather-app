@@ -37,6 +37,8 @@ export interface AppState {
   resetAnswers: () => void;
   residentKey: ResidentKey | null;
   setResidentKey: (key: ResidentKey | null) => void;
+  secondResidentKey: ResidentKey | null;
+  setSecondResidentKey: (key: ResidentKey | null) => void;
   previewMode: boolean;
   restart: () => void;
 }

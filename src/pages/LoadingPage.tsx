@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useApp } from '@/store/useApp';
 import { PageContainer } from '@/components/PageContainer';
-import { calculateResident, calculateResidentDebug, RESIDENTS } from '@/constants/residents';
+import { calculateResident, calculateResidentDebug, calculateTopTwoResidents, RESIDENTS } from '@/constants/residents';
 
 const FIREFLIES = [
   { top: '30%', left: '35%', size: 'w-3 h-3', delay: '0s', duration: '2s' },
@@ -12,11 +12,12 @@ const FIREFLIES = [
 ];
 
 export function LoadingPage() {
-  const { answers, setCurrentPage, setResidentKey } = useApp();
+  const { answers, setCurrentPage, setResidentKey, setSecondResidentKey } = useApp();
 
   useEffect(() => {
-    const key = calculateResident(answers);
+    const [key, secondKey] = calculateTopTwoResidents(answers);
     setResidentKey(key);
+    setSecondResidentKey(secondKey);
 
     const debug = calculateResidentDebug(answers);
     const dimScores = debug.dimScores;
@@ -39,7 +40,7 @@ export function LoadingPage() {
 
     const timer = setTimeout(() => setCurrentPage('result'), 3000);
     return () => clearTimeout(timer);
-  }, [answers, setCurrentPage, setResidentKey]);
+  }, [answers, setCurrentPage, setResidentKey, setSecondResidentKey]);
 
   return (
     <PageContainer className="bg-gradient-to-b from-purple-bg to-purple-bg-dark">

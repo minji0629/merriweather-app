@@ -11,7 +11,7 @@ import { supabase, fetchQuestions, decrementQuestion, QuestionRow } from '@/lib/
 import { loadUserId } from '@/lib/authStorage';
 
 export function PremiumResultPage() {
-  const { nickname, setCurrentPage, residentKey, restart, previousPage } = useApp();
+  const { nickname, setCurrentPage, residentKey, secondResidentKey, restart, previousPage } = useApp();
   const [showShareModal, setShowShareModal] = useState(false);
   const [showExtraModal, setShowExtraModal] = useState(false);
   const [question, setQuestion] = useState('');
@@ -60,7 +60,7 @@ export function PremiumResultPage() {
       setGaulLoading(true);
       setGaulError(false);
       try {
-        const text = await generateGaul(nickname || '여행자', residentKey);
+        const text = await generateGaul(nickname || '여행자', residentKey, secondResidentKey ?? residentKey);
         if (!cancelled) setGaulText(text);
       } catch {
         if (!cancelled) setGaulError(true);
@@ -73,7 +73,7 @@ export function PremiumResultPage() {
       setLetterLoading(true);
       setLetterError(false);
       try {
-        const text = await generateLetter(nickname || '여행자', residentKey);
+        const text = await generateLetter(nickname || '여행자', residentKey, secondResidentKey ?? residentKey);
         if (!cancelled) setLetterText(text);
       } catch {
         if (!cancelled) setLetterError(true);
@@ -88,13 +88,13 @@ export function PremiumResultPage() {
     return () => {
       cancelled = true;
     };
-  }, [RESULT, residentKey, nickname]);
+  }, [RESULT, residentKey, secondResidentKey, nickname]);
 
   if (!RESULT) {
     return (
       <PageContainer className="bg-base">
         <div className="flex items-center justify-center flex-1 min-h-0">
-          <p className="font-sans text-sm text-text-sub">결과를 불러오고 있어요...</p>
+          <p className="font-batang text-sm text-text-sub">결과를 불러오고 있어요...</p>
         </div>
       </PageContainer>
     );
@@ -108,7 +108,7 @@ export function PremiumResultPage() {
     setIsAsking(true);
     setLuAnswer('');
     try {
-      const text = await answerQuestion(nickname || '여행자', residentKey, question.trim());
+      const text = await answerQuestion(nickname || '여행자', residentKey, secondResidentKey ?? residentKey, question.trim());
       setLuAnswer(text);
       // DB에서 remaining_count 차감
       if (questionRow) {
@@ -131,14 +131,14 @@ export function PremiumResultPage() {
         <div className="flex items-center justify-center py-6">
           <div className="flex flex-col items-center gap-2">
             <Sparkles className="w-5 h-5 text-point animate-pulse" />
-            <p className="font-sans text-sm text-text-sub">루가 생각하는 중이에요...</p>
+            <p className="font-batang text-sm text-text-sub">루가 생각하는 중이에요...</p>
           </div>
         </div>
       );
     }
     if (gaulError) {
       return (
-        <p className="font-sans text-sm text-text-sub leading-relaxed text-center py-4">
+        <p className="font-batang text-sm text-text-sub leading-relaxed text-center py-4">
           지금은 결을 만들기 어려워요. 잠시 후 다시 확인해줘.
         </p>
       );
@@ -159,7 +159,7 @@ export function PremiumResultPage() {
         <div className="flex items-center justify-center py-6">
           <div className="flex flex-col items-center gap-2">
             <Sparkles className="w-5 h-5 text-point animate-pulse" />
-            <p className="font-sans text-sm text-text-sub">루가 생각하는 중이에요...</p>
+            <p className="font-batang text-sm text-text-sub">루가 생각하는 중이에요...</p>
           </div>
         </div>
       );
@@ -341,7 +341,7 @@ export function PremiumResultPage() {
                     <div className="flex-shrink-0 w-8 h-8 rounded-full bg-point/15 flex items-center justify-center">
                       <Sparkles className="w-4 h-4 text-point animate-pulse" />
                     </div>
-                    <p className="font-sans text-sm text-text-sub">루가 생각하는 중이에요...</p>
+                    <p className="font-batang text-sm text-text-sub">루가 생각하는 중이에요...</p>
                   </div>
                 </div>
               )}

@@ -7,22 +7,24 @@ const STORAGE_KEY = 'merriweather:app-state';
 interface PersistedState {
   nickname: string;
   residentKey: ResidentKey | null;
+  secondResidentKey: ResidentKey | null;
   answers: Answer[];
 }
 
 function loadPersistedState(): PersistedState {
-  if (typeof window === 'undefined') return { nickname: '', residentKey: null, answers: [] };
+  if (typeof window === 'undefined') return { nickname: '', residentKey: null, secondResidentKey: null, answers: [] };
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return { nickname: '', residentKey: null, answers: [] };
+    if (!raw) return { nickname: '', residentKey: null, secondResidentKey: null, answers: [] };
     const parsed = JSON.parse(raw) as Partial<PersistedState>;
     return {
       nickname: parsed.nickname ?? '',
       residentKey: parsed.residentKey ?? null,
+      secondResidentKey: parsed.secondResidentKey ?? null,
       answers: parsed.answers ?? [],
     };
   } catch {
-    return { nickname: '', residentKey: null, answers: [] };
+    return { nickname: '', residentKey: null, secondResidentKey: null, answers: [] };
   }
 }
 
@@ -43,6 +45,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [previousPage, setPreviousPage] = useState<Page | null>(null);
   const [answers, setAnswers] = useState<Answer[]>(persisted.answers);
   const [residentKey, setResidentKey] = useState<ResidentKey | null>(persisted.residentKey);
+  const [secondResidentKey, setSecondResidentKey] = useState<ResidentKey | null>(persisted.secondResidentKey);
 
   const setCurrentPage = useCallback((page: Page) => {
     setCurrentPageState((prev) => {
@@ -55,12 +58,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
     try {
       window.localStorage.setItem(
         STORAGE_KEY,
-        JSON.stringify({ nickname, residentKey, answers }),
+        JSON.stringify({ nickname, residentKey, secondResidentKey, answers }),
       );
     } catch {
       // ignore quota / serialization errors
     }
-  }, [nickname, residentKey, answers]);
+  }, [nickname, residentKey, secondResidentKey, answers]);
 
   const addAnswer = useCallback((answer: Answer) => {
     setAnswers((prev) => [...prev, answer]);
@@ -77,6 +80,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setNickname('');
     setAnswers([]);
     setResidentKey(null);
+    setSecondResidentKey(null);
     setCurrentPage('nickname');
     try {
       window.localStorage.removeItem(STORAGE_KEY);
@@ -96,6 +100,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     resetAnswers,
     residentKey,
     setResidentKey,
+    secondResidentKey,
+    setSecondResidentKey,
     previewMode,
     restart,
   };

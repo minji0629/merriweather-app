@@ -1458,6 +1458,13 @@ export function calculateResidentDebug(answers: Answer[]): ResidentCalcDebug {
   };
 }
 
+/** 상위 1·2위 주민 반환 (결·편지 프롬프트에서 조합으로 사용) */
+export function calculateTopTwoResidents(answers: Answer[]): [ResidentKey, ResidentKey] {
+  const debug = calculateResidentDebug(answers);
+  const [first, second] = debug.sorted;
+  return [first.key, second.key];
+}
+
 /** 주민 결정 후 프로필 반환 */
 export function getResidentProfile(key: ResidentKey): ResidentProfile {
   return RESIDENTS[key];
