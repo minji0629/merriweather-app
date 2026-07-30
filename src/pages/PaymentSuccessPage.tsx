@@ -128,7 +128,7 @@ export function PaymentSuccessPage() {
 
   return (
     <PageContainer className="bg-base">
-      <div className="flex flex-col items-center justify-center min-h-screen px-6 text-center">
+      <div className="flex flex-col items-center justify-center flex-1 min-h-0 px-6 text-center">
         {status === 'needLogin' ? (
           <>
             <div className="w-20 h-20 rounded-full bg-point/15 flex items-center justify-center mb-6 animate-scaleIn">

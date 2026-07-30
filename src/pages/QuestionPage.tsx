@@ -211,7 +211,7 @@ export function QuestionPage() {
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/15 to-black/35" />
 
         {/* Content */}
-        <div className={`relative z-10 flex flex-col min-h-screen max-w-[430px] mx-auto px-5 pt-4 pb-6 transition-opacity duration-300 ${phase === 'transition' ? 'opacity-0' : 'opacity-100'}`}>
+        <div className={`relative z-10 flex flex-col flex-1 min-h-0 max-w-[430px] mx-auto px-5 pt-4 pb-6 transition-opacity duration-300 ${phase === 'transition' ? 'opacity-0' : 'opacity-100'}`}>
           {/* Top bar: chapter badge + progress */}
           <div className="flex items-center justify-between flex-shrink-0">
             <span className="px-3 py-1 bg-point text-white text-xs font-sans font-medium rounded-full shadow-md">

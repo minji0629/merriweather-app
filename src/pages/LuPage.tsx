@@ -50,7 +50,7 @@ export function LuPage() {
       </button>
 
       {/* Content area */}
-      <div className="relative flex flex-col min-h-screen px-6 pt-20 pb-8">
+      <div className="relative flex flex-col flex-1 min-h-0 px-6 pt-20 pb-8">
         {/* Dialogue area */}
         <div className="flex-1 flex flex-col items-center justify-center gap-6">
           {/* Lu character placeholder */}

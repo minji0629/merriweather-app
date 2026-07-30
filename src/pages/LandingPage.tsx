@@ -19,7 +19,7 @@ export function LandingPage() {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 flex flex-col items-center min-h-screen px-6 pt-20 pb-12">
+      <div className="relative z-10 flex flex-col items-center min-h-0 flex-1 px-6 pt-20 pb-12">
         {/* Logo */}
         <h1 className="font-batang text-3xl text-white tracking-wide animate-fadeIn drop-shadow-lg">
           메리웨더

@@ -11,7 +11,7 @@ export function ContactPage() {
 
   return (
     <PageContainer className="bg-base">
-      <div className="overflow-y-auto scrollbar-hide min-h-screen">
+      <div className="overflow-y-auto scrollbar-hide flex-1 min-h-0">
         <div className="px-6 pt-10 pb-10">
           {/* Top bar */}
           <div className="flex items-center justify-between mb-10">

@@ -56,7 +56,7 @@ export function ArchivePage() {
   if (!user) {
     return (
       <PageContainer className="bg-base">
-        <div className="overflow-y-auto scrollbar-hide min-h-screen">
+        <div className="overflow-y-auto scrollbar-hide flex-1 min-h-0">
           <div className="px-6 pt-10 pb-8">
             <div className="flex items-center justify-between mb-8">
               <button
@@ -93,7 +93,7 @@ export function ArchivePage() {
   if (results === null) {
     return (
       <PageContainer className="bg-base">
-        <div className="flex items-center justify-center min-h-screen">
+        <div className="flex items-center justify-center flex-1 min-h-0">
           <div className="flex items-center gap-2 text-point-dark">
             <Sparkles className="w-5 h-5 animate-pulse" />
             <span className="font-sans text-sm">기록을 불러오는 중...</span>
@@ -105,7 +105,7 @@ export function ArchivePage() {
 
   return (
     <PageContainer className="bg-base">
-      <div className="overflow-y-auto scrollbar-hide min-h-screen">
+      <div className="overflow-y-auto scrollbar-hide flex-1 min-h-0">
         <div className="px-6 pt-10 pb-8">
           {/* Top bar */}
           <div className="flex items-center justify-between mb-8">

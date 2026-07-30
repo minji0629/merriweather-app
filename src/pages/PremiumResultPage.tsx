@@ -23,7 +23,7 @@ export function PremiumResultPage() {
   if (!RESULT) {
     return (
       <PageContainer className="bg-base">
-        <div className="flex items-center justify-center min-h-screen">
+        <div className="flex items-center justify-center flex-1 min-h-0">
           <p className="font-sans text-sm text-text-sub">결과를 불러오고 있어요...</p>
         </div>
       </PageContainer>
@@ -47,7 +47,7 @@ export function PremiumResultPage() {
 
   return (
     <PageContainer className="bg-base">
-      <div className="overflow-y-auto scrollbar-hide min-h-screen">
+      <div className="overflow-y-auto scrollbar-hide flex-1 min-h-0">
         <div className="px-6 pt-10 pb-8">
           {/* Top bar */}
           <div className="flex items-center justify-between mb-6">

@@ -37,7 +37,7 @@ export function TransitionPage() {
 
       {/* Content */}
       <div
-        className={`relative z-20 flex flex-col items-center justify-center min-h-screen px-6 transition-all duration-1000 ${
+        className={`relative z-20 flex flex-col items-center justify-center flex-1 min-h-0 px-6 transition-all duration-1000 ${
           phase === 'forest' ? 'opacity-100' : 'opacity-0'
         }`}
       >
