@@ -23,7 +23,9 @@ export function ArchivePage() {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const loadResults = async (userId: string) => {
+    console.log('[Results] Archive - fetchUserResults 호출:', { userId });
     const rows = await fetchUserResults(userId);
+    console.log('[Results] Archive - fetchUserResults 결과:', rows.length, '건');
     setResults(rows);
   };
 

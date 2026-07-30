@@ -45,9 +45,11 @@ export function AuthCallbackPage() {
         console.log('[Auth Callback] upsertUser 결과:', dbUser);
 
         if (dbUser && residentKey) {
-          console.log('[Auth Callback] saveFreeResult 호출:', { userId: dbUser.id, residentKey });
+          console.log('[Results] AuthCallback - saveFreeResult 호출:', { userId: dbUser.id, residentKey, answersCount: answers.length });
           const result = await saveFreeResult(dbUser.id, residentKey, { answers });
-          console.log('[Auth Callback] saveFreeResult 결과:', result);
+          console.log('[Results] AuthCallback - saveFreeResult 결과:', result ? `성공 (id: ${result.id})` : '실패 (null)');
+        } else {
+          console.log('[Results] AuthCallback - saveFreeResult 스킵:', { hasDbUser: !!dbUser, hasResidentKey: !!residentKey });
         }
 
         // 대기 중인 결제 저장 처리

@@ -1,7 +1,9 @@
 import { useEffect } from 'react';
 import { useApp } from '@/store/useApp';
+import { useAuth } from '@/store/useAuth';
 import { PageContainer } from '@/components/PageContainer';
 import { calculateResident, calculateResidentDebug, calculateTopTwoResidents, RESIDENTS } from '@/constants/residents';
+import { saveFreeResult } from '@/lib/supabase';
 
 const FIREFLIES = [
   { top: '30%', left: '35%', size: 'w-3 h-3', delay: '0s', duration: '2s' },
@@ -12,12 +14,30 @@ const FIREFLIES = [
 ];
 
 export function LoadingPage() {
-  const { answers, setCurrentPage, setResidentKey, setSecondResidentKey } = useApp();
+  const { answers, setCurrentPage, setResidentKey, setSecondResidentKey, nickname } = useApp();
+  const { user } = useAuth();
 
   useEffect(() => {
     const [key, secondKey] = calculateTopTwoResidents(answers);
     setResidentKey(key);
     setSecondResidentKey(secondKey);
+
+    console.log('[Results] LoadingPage - 주민 배정 완료:', { key, secondKey, isLoggedIn: !!user, userId: user?.id, nickname });
+
+    if (user && key) {
+      console.log('[Results] LoadingPage - 로그인 상태, saveFreeResult 호출:', { userId: user.id, residentKey: key });
+      saveFreeResult(user.id, key, { answers })
+        .then((result) => {
+          if (result) {
+            console.log('[Results] LoadingPage - saveFreeResult 성공:', result.id);
+          } else {
+            console.error('[Results] LoadingPage - saveFreeResult 실패: null 반환');
+          }
+        })
+        .catch((err) => console.error('[Results] LoadingPage - saveFreeResult 예외:', err));
+    } else {
+      console.log('[Results] LoadingPage - 비로그인 상태, results 테이블에 저장하지 않음 (나중에 로그인 시 저장됨)');
+    }
 
     const debug = calculateResidentDebug(answers);
     const dimScores = debug.dimScores;

@@ -89,18 +89,19 @@ export function PaymentSuccessPage() {
           orderId!,
         );
         if (result) {
-          console.log('[Payment Success] purchases insert 성공:', result);
+          console.log('[Results] PaymentSuccess - purchases insert 성공:', result.id);
         } else {
-          console.error('[Payment Success] purchases insert 실패: null 반환 (오류 발생)');
+          console.error('[Results] PaymentSuccess - purchases insert 실패: null 반환');
         }
       } catch (err) {
-        console.error('[Payment Success] savePurchase 예외:', err);
+        console.error('[Results] PaymentSuccess - savePurchase 예외:', err);
       }
 
       let latestResultId: string | null = null;
       try {
+        console.log('[Results] PaymentSuccess - markLatestResultPaid 호출:', { userId });
         const ok = await markLatestResultPaid(userId);
-        console.log('[Payment Success] markLatestResultPaid 결과:', ok);
+        console.log('[Results] PaymentSuccess - markLatestResultPaid 결과:', ok);
 
         // 방금 paid로 표시된 결과 ID 조회
         const { data: latestResult } = await supabase
@@ -111,9 +112,12 @@ export function PaymentSuccessPage() {
           .limit(1)
           .maybeSingle();
         latestResultId = latestResult?.id ?? null;
-        console.log('[Payment Success] latestResultId:', latestResultId);
+        console.log('[Results] PaymentSuccess - latestResultId:', latestResultId);
+        if (!latestResultId) {
+          console.error('[Results] PaymentSuccess - results 테이블에 행이 없습니다! saveFreeResult가 선행되지 않았을 수 있습니다.');
+        }
       } catch (err) {
-        console.error('[Payment Success] markLatestResultPaid 예외:', err);
+        console.error('[Results] PaymentSuccess - markLatestResultPaid 예외:', err);
       }
 
       // questions 테이블 생성/업데이트
