@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useApp } from '@/store/useApp';
 import { PageContainer } from '@/components/PageContainer';
 import { ComingSoonModal } from '@/components/ComingSoonModal';
@@ -7,8 +7,8 @@ import { RESIDENT_CARD, AI_SECTION_2, AI_LETTER } from '@/constants/images';
 import { getResidentProfile, withNickname } from '@/constants/residents';
 import { Share2, Send, Sparkles } from '@/components/Icons';
 import { generateGaul, generateLetter, answerQuestion } from '@/lib/claude';
-
-const QUESTION_LIMIT = 3;
+import { supabase, fetchQuestions, decrementQuestion, QuestionRow } from '@/lib/supabase';
+import { loadUserId } from '@/lib/authStorage';
 
 export function PremiumResultPage() {
   const { nickname, setCurrentPage, residentKey, restart, previousPage } = useApp();
@@ -17,7 +17,10 @@ export function PremiumResultPage() {
   const [question, setQuestion] = useState('');
   const [luAnswer, setLuAnswer] = useState('');
   const [isAsking, setIsAsking] = useState(false);
-  const [questionCount, setQuestionCount] = useState(0);
+
+  // DB-backed question row
+  const [questionRow, setQuestionRow] = useState<QuestionRow | null>(null);
+  const [questionRowLoading, setQuestionRowLoading] = useState(true);
 
   const [gaulText, setGaulText] = useState('');
   const [gaulLoading, setGaulLoading] = useState(false);
@@ -28,6 +31,25 @@ export function PremiumResultPage() {
   const [letterError, setLetterError] = useState(false);
 
   const RESULT = residentKey ? getResidentProfile(residentKey) : null;
+
+  // Load question row from DB
+  const loadQuestionRow = useCallback(async () => {
+    const userId = loadUserId();
+    if (!userId) { setQuestionRowLoading(false); return; }
+    const { data: latestResult } = await supabase
+      .from('results')
+      .select('id')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (!latestResult?.id) { setQuestionRowLoading(false); return; }
+    const row = await fetchQuestions(userId, latestResult.id);
+    setQuestionRow(row);
+    setQuestionRowLoading(false);
+  }, []);
+
+  useEffect(() => { loadQuestionRow(); }, [loadQuestionRow]);
 
   useEffect(() => {
     if (!RESULT || !residentKey) return;
@@ -79,16 +101,22 @@ export function PremiumResultPage() {
   }
 
   const firstChar = RESULT.name.charAt(RESULT.name.length - 1);
-  const remainingQuestions = QUESTION_LIMIT - questionCount;
+  const remainingQuestions = questionRow?.remaining_count ?? 0;
 
   const handleAsk = async () => {
-    if (!question.trim() || questionCount >= QUESTION_LIMIT || !residentKey) return;
+    if (!question.trim() || !questionRow || questionRow.remaining_count <= 0 || !residentKey) return;
     setIsAsking(true);
     setLuAnswer('');
     try {
       const text = await answerQuestion(nickname || '여행자', residentKey, question.trim());
       setLuAnswer(text);
-      setQuestionCount((c) => c + 1);
+      // DB에서 remaining_count 차감
+      if (questionRow) {
+        const ok = await decrementQuestion(questionRow.id, questionRow.remaining_count);
+        if (ok) {
+          setQuestionRow({ ...questionRow, remaining_count: questionRow.remaining_count - 1 });
+        }
+      }
     } catch {
       setLuAnswer('지금은 루가 답변을 드리기 어려워요. 잠시 후 다시 시도해줘.');
     } finally {
@@ -271,7 +299,7 @@ export function PremiumResultPage() {
               <div className="flex items-center justify-between mb-3">
                 <p className="font-sans text-xs text-text-sub">루에게 질문할 수 있어요</p>
                 <span className="text-xs font-sans text-point-dark font-medium">
-                  남은 횟수 {remainingQuestions}/{QUESTION_LIMIT}
+                  남은 횟수 {remainingQuestions}회
                 </span>
               </div>
               <div className="flex gap-2 mb-4">

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useApp } from '@/store/useApp';
 import { useAuth } from '@/store/useAuth';
-import { supabase, savePurchase, markLatestResultPaid } from '@/lib/supabase';
+import { supabase, savePurchase, markLatestResultPaid, upsertQuestions } from '@/lib/supabase';
 import {
   loadUserId,
   savePendingPurchase,
@@ -35,7 +35,9 @@ export function PaymentSuccessPage() {
 
       const productType = orderId!.includes('expedition_plus')
         ? '탐험권+추가질문'
-        : '탐험권';
+        : orderId!.includes('extra_questions')
+          ? '추가질문'
+          : '탐험권';
 
       // 1. supabase.auth.getSession() 으로 세션 직접 확인
       const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
@@ -95,11 +97,33 @@ export function PaymentSuccessPage() {
         console.error('[Payment Success] savePurchase 예외:', err);
       }
 
+      let latestResultId: string | null = null;
       try {
         const ok = await markLatestResultPaid(userId);
         console.log('[Payment Success] markLatestResultPaid 결과:', ok);
+
+        // 방금 paid로 표시된 결과 ID 조회
+        const { data: latestResult } = await supabase
+          .from('results')
+          .select('id')
+          .eq('user_id', userId)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        latestResultId = latestResult?.id ?? null;
+        console.log('[Payment Success] latestResultId:', latestResultId);
       } catch (err) {
         console.error('[Payment Success] markLatestResultPaid 예외:', err);
+      }
+
+      // questions 테이블 생성/업데이트
+      if (latestResultId) {
+        try {
+          const qRow = await upsertQuestions(userId, latestResultId, productType);
+          console.log('[Payment Success] upsertQuestions 결과:', qRow);
+        } catch (err) {
+          console.error('[Payment Success] upsertQuestions 예외:', err);
+        }
       }
 
       setStatus('done');

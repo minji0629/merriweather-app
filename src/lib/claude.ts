@@ -2,35 +2,42 @@ import { ResidentKey } from '@/constants/questions';
 import { RESIDENTS } from '@/constants/residents';
 import { vocative } from '@/lib/korean';
 
-const API_URL = 'https://api.anthropic.com/v1/messages';
-const API_KEY = import.meta.env.VITE_ANTHROPIC_API_KEY as string;
-const MODEL = 'claude-sonnet-4-6';
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
+const EDGE_URL = `${SUPABASE_URL}/functions/v1/claude-ai`;
+
+if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+  console.error('[Claude] Supabase 환경변수가 설정되지 않았습니다.');
+}
 
 async function callClaude(prompt: string): Promise<string> {
-  const res = await fetch(API_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': API_KEY,
-      'anthropic-version': '2023-06-01',
-    },
-    body: JSON.stringify({
-      model: MODEL,
-      max_tokens: 1000,
-      messages: [{ role: 'user', content: prompt }],
-    }),
-  });
+  try {
+    const res = await fetch(EDGE_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+      },
+      body: JSON.stringify({ prompt }),
+    });
 
-  if (!res.ok) {
-    throw new Error(`Claude API error: ${res.status}`);
-  }
+    if (!res.ok) {
+      const errBody = await res.text().catch(() => '');
+      console.error('[Claude] Edge function 오류:', res.status, errBody);
+      throw new Error(`Edge function error: ${res.status}`);
+    }
 
-  const data = await res.json();
-  const text = data?.content?.[0]?.text;
-  if (typeof text !== 'string') {
-    throw new Error('Claude API: unexpected response shape');
+    const data = await res.json();
+    const text: string | undefined = data?.text;
+    if (typeof text !== 'string' || !text) {
+      console.error('[Claude] 예상치 못한 응답:', data);
+      throw new Error('Unexpected response from edge function');
+    }
+    return text;
+  } catch (err) {
+    console.error('[Claude] API 호출 실패:', err);
+    throw err;
   }
-  return text.trim();
 }
 
 /** 1. 당신 안에 흐르는 결 */

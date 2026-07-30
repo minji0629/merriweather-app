@@ -181,6 +181,104 @@ export async function fetchUserResults(userId: string): Promise<ResultRow[]> {
   return (data as ResultRow[]) ?? [];
 }
 
+/**
+ * 상품별 초기 질문 횟수
+ * expedition: 1, expedition_plus: 4, extra_questions: +3 추가
+ */
+const INITIAL_COUNTS: Record<string, number> = {
+  '탐험권': 1,
+  '탐험권+추가질문': 4,
+};
+
+/**
+ * 결제 완료 시 questions 행 생성 또는 횟수 추가.
+ * extra_questions는 기존 행의 remaining_count에 3을 더함.
+ */
+export async function upsertQuestions(
+  userId: string,
+  resultId: string,
+  productType: string,
+): Promise<QuestionRow | null> {
+  if (productType === '추가질문') {
+    // 기존 행 찾아서 +3
+    const { data: existing } = await supabase
+      .from('questions')
+      .select('id, remaining_count')
+      .eq('user_id', userId)
+      .eq('result_id', resultId)
+      .maybeSingle();
+
+    if (existing) {
+      const { data, error } = await supabase
+        .from('questions')
+        .update({ remaining_count: existing.remaining_count + 3 })
+        .eq('id', existing.id)
+        .select()
+        .maybeSingle();
+      if (error) {
+        console.error('[Supabase] upsertQuestions(extra) error:', error.message);
+        return null;
+      }
+      return data as QuestionRow | null;
+    }
+    // 행이 없으면 3으로 새로 생성
+    const { data, error } = await supabase
+      .from('questions')
+      .insert({ user_id: userId, result_id: resultId, remaining_count: 3 })
+      .select()
+      .maybeSingle();
+    if (error) {
+      console.error('[Supabase] upsertQuestions(extra-new) error:', error.message);
+      return null;
+    }
+    return data as QuestionRow | null;
+  }
+
+  const count = INITIAL_COUNTS[productType] ?? 1;
+  const { data, error } = await supabase
+    .from('questions')
+    .insert({ user_id: userId, result_id: resultId, remaining_count: count })
+    .select()
+    .maybeSingle();
+  if (error) {
+    console.error('[Supabase] upsertQuestions error:', error.message);
+    return null;
+  }
+  return data as QuestionRow | null;
+}
+
+/** 사용자의 결과에 대한 질문 행 조회 */
+export async function fetchQuestions(
+  userId: string,
+  resultId: string,
+): Promise<QuestionRow | null> {
+  const { data, error } = await supabase
+    .from('questions')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('result_id', resultId)
+    .maybeSingle();
+  if (error) {
+    console.error('[Supabase] fetchQuestions error:', error.message);
+    return null;
+  }
+  return data as QuestionRow | null;
+}
+
+/** 질문 1회 사용: remaining_count - 1. 이미 0이면 false 반환 */
+export async function decrementQuestion(rowId: string, current: number): Promise<boolean> {
+  if (current <= 0) return false;
+  const { error } = await supabase
+    .from('questions')
+    .update({ remaining_count: current - 1 })
+    .eq('id', rowId);
+  if (error) {
+    console.error('[Supabase] decrementQuestion error:', error.message);
+    return false;
+  }
+  return true;
+}
+
 export async function deleteResult(resultId: string, userId: string): Promise<boolean> {
   console.log('[Delete Result] 1. 삭제할 result id:', resultId, '/ user_id:', userId);
   console.log('[Delete Result] 2. Supabase delete 호출...');
