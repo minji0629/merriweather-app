@@ -6,7 +6,7 @@ import { RESIDENT_CARD } from '@/constants/images';
 import { getResidentProfile, withNickname, RESIDENT_FEATURES } from '@/constants/residents';
 import { hasFinalConsonant } from '@/lib/korean';
 import { generateGaul, generateLetter, answerQuestion } from '@/lib/claude';
-import { fetchUserResults, fetchQuestions, decrementQuestion, QuestionRow } from '@/lib/supabase';
+import { fetchUserResults, fetchQuestions, fetchLatestQuestionsByUser, createDefaultQuestions, decrementQuestion, QuestionRow } from '@/lib/supabase';
 import { Sparkles, Send, Share2, Gift } from '@/components/Icons';
 
 export function PremiumResultPage() {
@@ -69,7 +69,26 @@ export function PremiumResultPage() {
       if (cancelled || results.length === 0) return;
       const latest = results[0];
       setResultId(latest.id);
-      const qRow = await fetchQuestions(user.id, latest.id);
+
+      console.log('[Questions] 현재 user_id:', user.id);
+      console.log('[Questions] 현재 result_id:', latest.id);
+
+      // 1) result_id로 정확히 매칭
+      let qRow = await fetchQuestions(user.id, latest.id);
+
+      // 2) 매칭 실패 시 user_id만으로 최근 행 조회
+      if (!qRow) {
+        console.log('[Questions] result_id 매칭 실패, user_id만으로 조회');
+        qRow = await fetchLatestQuestionsByUser(user.id);
+      }
+
+      // 3) 여전히 없으면 탐험권 구매자용 기본 1회 자동 생성
+      if (!qRow) {
+        console.log('[Questions] 데이터 없음, 기본 1회 자동 생성');
+        qRow = await createDefaultQuestions(user.id, latest.id, 1);
+      }
+
+      console.log('[Questions] 테이블에서 불러온 횟수:', qRow?.remaining_count ?? 0);
       if (!cancelled) setQuestionRow(qRow);
     })();
     return () => {

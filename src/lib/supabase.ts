@@ -265,6 +265,42 @@ export async function fetchQuestions(
   return data as QuestionRow | null;
 }
 
+/** result_id 매칭 실패 시 user_id만으로 가장 최근 questions 행 조회 */
+export async function fetchLatestQuestionsByUser(
+  userId: string,
+): Promise<QuestionRow | null> {
+  const { data, error } = await supabase
+    .from('questions')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) {
+    console.error('[Supabase] fetchLatestQuestionsByUser error:', error.message);
+    return null;
+  }
+  return data as QuestionRow | null;
+}
+
+/** questions 행이 없을 때 탐험권 구매자용 기본 1회 자동 생성 */
+export async function createDefaultQuestions(
+  userId: string,
+  resultId: string,
+  count = 1,
+): Promise<QuestionRow | null> {
+  const { data, error } = await supabase
+    .from('questions')
+    .insert({ user_id: userId, result_id: resultId, remaining_count: count })
+    .select()
+    .maybeSingle();
+  if (error) {
+    console.error('[Supabase] createDefaultQuestions error:', error.message);
+    return null;
+  }
+  return data as QuestionRow | null;
+}
+
 /** 질문 1회 사용: remaining_count - 1. 이미 0이면 false 반환 */
 export async function decrementQuestion(rowId: string, current: number): Promise<boolean> {
   if (current <= 0) return false;
