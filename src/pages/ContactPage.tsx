@@ -6,7 +6,7 @@ export function ContactPage() {
   const { setCurrentPage } = useApp();
 
   const handleKakao = () => {
-    window.open('#', '_blank', 'noopener,noreferrer');
+    window.open('http://pf.kakao.com/_mxkcxnX', '_blank', 'noopener,noreferrer');
   };
 
   return (
