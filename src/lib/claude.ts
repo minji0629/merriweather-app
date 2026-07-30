@@ -2,22 +2,13 @@ import { ResidentKey } from '@/constants/questions';
 import { RESIDENTS } from '@/constants/residents';
 import { vocative } from '@/lib/korean';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
-const EDGE_URL = `${SUPABASE_URL}/functions/v1/claude-ai`;
-
-if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-  console.error('[Claude] Supabase 환경변수가 설정되지 않았습니다.');
-}
+const API_URL = '/api/claude';
 
 async function callClaude(prompt: string): Promise<string> {
   try {
-    const res = await fetch(EDGE_URL, {
+    const res = await fetch(API_URL, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ prompt }),
     });
 
