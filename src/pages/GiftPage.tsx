@@ -134,11 +134,11 @@ export function GiftPage() {
                   >
                     {selected === 'gift_plus' && <Check className="w-3 h-3 text-white" />}
                   </div>
-                  <span className="font-sans font-medium text-text">탐험권 + 추가 질문 3회</span>
+                  <span className="font-sans font-medium text-text">탐험권 + 추가 질문 2회</span>
                 </div>
                 <span className="font-sans font-bold text-lg text-text">6,980원</span>
               </div>
-              <p className="font-sans text-sm text-text-sub ml-7">전체 결과 + 루에게 추가 질문 3회</p>
+              <p className="font-sans text-sm text-text-sub ml-7">전체 결과 + 루에게 추가 질문 2회</p>
             </div>
           </div>
 

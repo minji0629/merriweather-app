@@ -122,14 +122,14 @@ export function PaymentPage() {
                 >
                   {selected === 'expedition_plus' && <Check className="w-3 h-3 text-white" />}
                 </div>
-                <span className="font-sans font-medium text-text">탐험권 + 추가 질문 3회</span>
+                <span className="font-sans font-medium text-text">탐험권 + 추가 질문 2회</span>
               </div>
               <div className="text-right">
                 <p className="font-sans font-bold text-lg text-text">6,980원</p>
                 <p className="font-sans text-xs text-text-sub line-through">10,890원</p>
               </div>
             </div>
-            <p className="font-sans text-sm text-text-sub ml-7">전체 결과 + 루에게 추가 질문 3회</p>
+            <p className="font-sans text-sm text-text-sub ml-7">전체 결과 + 루에게 추가 질문 2회</p>
             <div className="mt-3 ml-7 flex items-center gap-1.5">
               <Clock className="w-3.5 h-3.5 text-point" />
               <p className="font-sans text-xs text-point-dark">베타 오픈 기간 한정</p>

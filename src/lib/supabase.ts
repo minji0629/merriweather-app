@@ -183,11 +183,11 @@ export async function fetchUserResults(userId: string): Promise<ResultRow[]> {
 
 /**
  * 상품별 초기 질문 횟수
- * expedition: 1, expedition_plus: 4, extra_questions: +3 추가
+ * expedition: 1, expedition_plus: 3, extra_questions: +3 추가
  */
 const INITIAL_COUNTS: Record<string, number> = {
   '탐험권': 1,
-  '탐험권+추가질문': 4,
+  '탐험권+추가질문': 3,
 };
 
 /**

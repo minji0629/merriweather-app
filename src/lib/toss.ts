@@ -11,10 +11,10 @@ export interface Product {
 
 export const PRODUCTS: Record<ProductId, Product> = {
   expedition: { id: 'expedition', name: '탐험권', amount: 4990, orderName: '메리웨더 탐험권' },
-  expedition_plus: { id: 'expedition_plus', name: '탐험권 + 추가 질문 3회', amount: 6980, orderName: '메리웨더 탐험권 + 추가 질문 3회' },
+  expedition_plus: { id: 'expedition_plus', name: '탐험권 + 추가 질문 2회', amount: 6980, orderName: '메리웨더 탐험권 + 추가 질문 2회' },
   extra_questions: { id: 'extra_questions', name: '추가 질문 3회', amount: 1990, orderName: '메리웨더 추가 질문 3회' },
   gift_basic: { id: 'gift_basic', name: '선물하기 - 탐험권', amount: 4990, orderName: '메리웨더 선물 - 탐험권' },
-  gift_plus: { id: 'gift_plus', name: '선물하기 - 탐험권 + 추가 질문', amount: 6980, orderName: '메리웨더 선물 - 탐험권 + 추가 질문 3회' },
+  gift_plus: { id: 'gift_plus', name: '선물하기 - 탐험권 + 추가 질문', amount: 6980, orderName: '메리웨더 선물 - 탐험권 + 추가 질문 2회' },
 };
 
 type TossPaymentsSDK = Awaited<ReturnType<typeof loadTossPayments>>;
