@@ -1,5 +1,6 @@
 import { ResidentKey } from '@/constants/questions';
 import { RESIDENTS } from '@/constants/residents';
+import { vocative } from '@/lib/korean';
 
 const API_URL = 'https://api.anthropic.com/v1/messages';
 const API_KEY = import.meta.env.VITE_ANTHROPIC_API_KEY as string;
@@ -54,16 +55,19 @@ export async function generateLetter(
   nickname: string,
   residentKey: ResidentKey,
 ): Promise<string> {
+  const call = vocative(nickname);
   const prompt = `당신은 메리웨더라는 자기발견 서비스의 안내자 루야.
 사용자에게 따뜻한 편지를 써줘.
 닉네임: ${nickname}
 주민 유형: ${residentKey} (${RESIDENTS[residentKey].name})
 편지 형식
-- ${nickname}야, 로 시작
+- ${call}, 로 시작
 - 500자 내외
 - 따뜻하고 진심 어린 문체
 - Gowun Batang 폰트에 어울리는 문어체
-- 마지막은 "— 루" 로 끝내기`;
+- 마지막은 "— 루" 로 끝내기
+닉네임 호칭 시 마지막 글자의 받침 여부에 따라
+받침이 있으면 -아, 없으면 -야를 붙여줘.`;
   return callClaude(prompt);
 }
 
@@ -73,6 +77,7 @@ export async function answerQuestion(
   residentKey: ResidentKey,
   question: string,
 ): Promise<string> {
+  const call = vocative(nickname);
   const prompt = `당신은 메리웨더라는 자기발견 서비스의 안내자 루야.
 사용자의 결과를 바탕으로 질문에 답해줘.
 닉네임: ${nickname}
@@ -82,6 +87,8 @@ export async function answerQuestion(
 - 200자 내외
 - 따뜻하고 공감하는 문체
 - 루의 말투로 (반말, 친근하게)
-- "~야" 로 호칭`;
+- "${call}" 로 호칭
+닉네임 호칭 시 마지막 글자의 받침 여부에 따라
+받침이 있으면 -아, 없으면 -야를 붙여줘.`;
   return callClaude(prompt);
 }
