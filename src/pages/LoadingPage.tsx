@@ -65,7 +65,7 @@ export function LoadingPage() {
   }, [answers, setCurrentPage, setResidentKey, setSecondResidentKey]);
 
   return (
-    <PageContainer className="bg-gradient-to-b from-purple-bg to-purple-bg-dark">
+    <PageContainer className="bg-gradient-to-b from-purple-bg to-purple-bg-dark" footer={false}>
       <div className="relative flex flex-col items-center justify-center flex-1 min-h-0 px-6">
         {/* Fireflies */}
         <div className="relative w-full h-64 mb-12">

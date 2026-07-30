@@ -19,7 +19,7 @@ export function PaymentFailPage() {
   }, [setCurrentPage]);
 
   return (
-    <PageContainer className="bg-base">
+    <PageContainer className="bg-base" footer={false}>
       <div className="flex flex-col items-center justify-center flex-1 min-h-0 px-6 text-center">
         <div className="w-20 h-20 rounded-full bg-red-100 flex items-center justify-center mb-6 animate-scaleIn">
           <X className="w-10 h-10 text-red-500" />

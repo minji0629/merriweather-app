@@ -155,7 +155,7 @@ export function PaymentSuccessPage() {
   }, [status, login]);
 
   return (
-    <PageContainer className="bg-base">
+    <PageContainer className="bg-base" footer={false}>
       <div className="flex flex-col items-center justify-center flex-1 min-h-0 px-6 text-center">
         {status === 'needLogin' ? (
           <>
