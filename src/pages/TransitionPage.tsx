@@ -17,7 +17,7 @@ export function TransitionPage() {
   }, [setCurrentPage]);
 
   return (
-    <PageContainer className="bg-black">
+    <PageContainer className="bg-black" footer={false}>
       {/* Darkening overlay */}
       <div
         className={`absolute inset-0 z-30 bg-black transition-opacity duration-[1500ms] ${
