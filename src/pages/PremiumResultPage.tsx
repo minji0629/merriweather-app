@@ -4,7 +4,8 @@ import { PageContainer } from '@/components/PageContainer';
 import { ComingSoonModal } from '@/components/ComingSoonModal';
 import { ExtraQuestionsModal } from '@/components/ExtraQuestionsModal';
 import { RESIDENT_CARD, AI_SECTION_2, AI_LETTER } from '@/constants/images';
-import { getResidentProfile, withNickname } from '@/constants/residents';
+import { getResidentProfile, withNickname, RESIDENT_FEATURES } from '@/constants/residents';
+import { hasFinalConsonant } from '@/lib/korean';
 import { Share2, Send, Sparkles } from '@/components/Icons';
 import { generateGaul, generateLetter, answerQuestion } from '@/lib/claude';
 import { supabase, fetchQuestions, decrementQuestion, QuestionRow } from '@/lib/supabase';
@@ -144,10 +145,21 @@ export function PremiumResultPage() {
       );
     }
     if (gaulText) {
+      const secondKey = secondResidentKey ?? residentKey;
+      const firstFeature = RESIDENT_FEATURES[residentKey];
+      const firstParticle = hasFinalConsonant(firstFeature) ? '과' : '와';
+      const secondFeature = RESIDENT_FEATURES[secondKey];
+      const secondParticle = hasFinalConsonant(secondFeature) ? '이' : '가';
+      const combinationLine = `${RESULT.name}의 ${firstFeature}${firstParticle} ${getResidentProfile(secondKey).name}의 ${secondFeature}${secondParticle} 만나 당신만의 결이 됩니다.`;
       return (
-        <p className="font-batang text-sm text-text leading-loose whitespace-pre-line">
-          {gaulText}
-        </p>
+        <div>
+          <p className="font-batang text-xs text-text-sub leading-relaxed mb-3">
+            {combinationLine}
+          </p>
+          <p className="font-batang text-sm text-text leading-loose whitespace-pre-line">
+            {gaulText}
+          </p>
+        </div>
       );
     }
     return null;

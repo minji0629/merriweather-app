@@ -1458,6 +1458,18 @@ export function calculateResidentDebug(answers: Answer[]): ResidentCalcDebug {
   };
 }
 
+/** 주민별 핵심 특징 (결 섹션 조합 한 줄 설명용) */
+export const RESIDENT_FEATURES: Record<ResidentKey, string> = {
+  guardian: '깊은 관찰력',
+  guide: '흔들리지 않는 방향감',
+  pioneer: '멈추지 않는 추진력',
+  lightkeeper: '따뜻한 공감력',
+  voyager: '자유로운 탐험심',
+  wayfarer: '사람을 잇는 연결력',
+  forestKeeper: '든든한 지속력',
+  sculptor: '섬세한 표현 욕구',
+};
+
 /** 상위 1·2위 주민 반환 (결·편지 프롬프트에서 조합으로 사용) */
 export function calculateTopTwoResidents(answers: Answer[]): [ResidentKey, ResidentKey] {
   const debug = calculateResidentDebug(answers);
