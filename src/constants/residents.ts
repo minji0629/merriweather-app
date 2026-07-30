@@ -967,9 +967,9 @@ export const RESIDENTS: Record<ResidentKey, ResidentProfile> = {
     ],
     primary: [
       { dim: 'D1', sign: 1 },
-      { dim: 'D2', sign: -1 },
     ],
     secondary: [
+      { dim: 'D2', sign: -1 },
       { dim: 'D4', sign: 1 },
       { dim: 'D6', sign: -1 },
     ],
