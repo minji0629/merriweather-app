@@ -5,6 +5,7 @@ import { PageContainer } from '@/components/PageContainer';
 import { Sparkles, Compass, Lock, X } from '@/components/Icons';
 import { supabase, fetchUserResults, deleteResult, ResultRow } from '@/lib/supabase';
 import { RESIDENTS } from '@/constants/residents';
+import { RESIDENT_IMAGES } from '@/constants/images';
 import type { ResidentKey } from '@/constants/questions';
 
 function formatDate(iso: string): string {
@@ -158,8 +159,12 @@ export function ArchivePage() {
                     style={{ animationDelay: delay, opacity: 0 }}
                   >
                     <div className="flex items-start gap-4 mb-4">
-                      <div className="w-14 h-14 rounded-2xl bg-gradient-to-b from-point-light/40 to-point/20 flex items-center justify-center flex-shrink-0">
-                        <span className="text-2xl">{profile.emoji}</span>
+                      <div className="w-14 h-14 rounded-2xl bg-gradient-to-b from-point-light/40 to-point/20 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                        {RESIDENT_IMAGES[row.resident_key] ? (
+                          <img src={RESIDENT_IMAGES[row.resident_key]} alt={profile.name} className="w-full h-full object-contain" />
+                        ) : (
+                          <span className="text-2xl">{profile.emoji}</span>
+                        )}
                       </div>
                       <div className="flex-1 min-w-0">
                         <h3 className="font-batang text-lg text-text truncate">{profile.name}</h3>

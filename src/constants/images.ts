@@ -14,6 +14,17 @@ export const CHAPTER_BG_6 = '/chapter6-bg.png';
 
 export const RESIDENT_CARD = '';
 
+export const RESIDENT_IMAGES: Record<string, string> = {
+  guardian: '/guardian.png',
+  guide: '/guide.png',
+  pioneer: '/pioneer.png',
+  lightkeeper: '/lightkeeper.png',
+  voyager: '/voyager.png',
+  wayfarer: '/wayfarer.png',
+  forestKeeper: '/forestkeeper.png',
+  sculptor: '/sculptor.png',
+};
+
 export const AD_AREA = '';
 
 export const AI_SECTION_2 = '';

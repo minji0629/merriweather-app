@@ -2,13 +2,15 @@ import { useState } from 'react';
 import { useApp } from '@/store/useApp';
 import { useAuth } from '@/store/useAuth';
 import { PageContainer } from '@/components/PageContainer';
-import { RESIDENT_CARD } from '@/constants/images';
+import { RESIDENT_IMAGES } from '@/constants/images';
+import { getResidentProfile } from '@/constants/residents';
 import { Check, Clock, Sparkles } from '@/components/Icons';
 import { TermsAgreement } from '@/components/TermsAgreement';
 import { requestPayment, ProductId } from '@/lib/toss';
 
 export function PaymentPage() {
-  const { nickname, setCurrentPage } = useApp();
+  const { nickname, setCurrentPage, residentKey } = useApp();
+  const PREVIEW = residentKey ? getResidentProfile(residentKey) : null;
   const { user, login } = useAuth();
   const { currentPage } = useApp();
   const [selected, setSelected] = useState<ProductId>('expedition_plus');
@@ -50,15 +52,15 @@ export function PaymentPage() {
           {/* Resident card preview */}
           <div className="flex flex-col items-center mb-8 animate-fadeUp">
             <div className="w-32 h-40 rounded-2xl bg-gradient-to-b from-letter to-[#EDE5D0] shadow-md border border-[#E0DDD8] flex flex-col items-center justify-center p-4 relative overflow-hidden">
-              {RESIDENT_CARD ? (
-                <img src={RESIDENT_CARD} alt="주민 카드" className="w-full h-full object-cover rounded-2xl" />
+              {residentKey && RESIDENT_IMAGES[residentKey] ? (
+                <img src={RESIDENT_IMAGES[residentKey]} alt={PREVIEW?.name ?? '주민 카드'} className="w-full h-full object-contain" />
               ) : (
                 <>
                   <div className="w-14 h-14 rounded-full bg-gradient-to-b from-point-light/50 to-point/40 flex items-center justify-center mb-2 shadow-inner">
-                    <span className="text-xl font-batang text-point-dark">파</span>
+                    <span className="text-xl font-batang text-point-dark">{PREVIEW?.emoji ?? '🦉'}</span>
                   </div>
                   <p className="text-[9px] font-sans text-text-sub">주민등록증</p>
-                  <p className="font-batang text-xs text-text">조용한 파수꾼</p>
+                  <p className="font-batang text-xs text-text">{PREVIEW?.name ?? '조용한 파수꾼'}</p>
                   <p className="text-[8px] font-sans text-text-sub mt-0.5">No. {nickname || 'GUEST'}-001</p>
                 </>
               )}

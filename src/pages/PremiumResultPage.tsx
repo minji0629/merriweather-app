@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useApp } from '@/store/useApp';
 import { useAuth } from '@/store/useAuth';
 import { PageContainer } from '@/components/PageContainer';
-import { RESIDENT_CARD } from '@/constants/images';
+import { RESIDENT_IMAGES } from '@/constants/images';
 import { getResidentProfile, withNickname, RESIDENT_FEATURES } from '@/constants/residents';
 import { hasFinalConsonant } from '@/lib/korean';
 import { generateGaul, generateLetter, answerQuestion } from '@/lib/claude';
@@ -212,8 +212,8 @@ export function PremiumResultPage() {
           {/* Resident card */}
           <div className="flex flex-col items-center mb-8 animate-fadeUp">
             <div className="w-56 h-72 rounded-2xl bg-gradient-to-b from-letter to-[#EDE5D0] shadow-lg border border-[#E0DDD8] flex flex-col items-center justify-center p-6 relative overflow-hidden">
-              {RESIDENT_CARD ? (
-                <img src={RESIDENT_CARD} alt="주민 카드" className="w-full h-full object-cover rounded-2xl" />
+              {RESIDENT_IMAGES[residentKey!] ? (
+                <img src={RESIDENT_IMAGES[residentKey!]} alt={RESULT.name} className="w-full h-full object-contain" />
               ) : (
                 <>
                   <div className="absolute top-3 right-3 px-2 py-0.5 bg-golden/80 rounded-full text-[10px] font-sans text-text">
