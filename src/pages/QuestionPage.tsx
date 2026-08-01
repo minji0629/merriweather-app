@@ -195,6 +195,7 @@ export function QuestionPage() {
   };
 
   const bgColor = CHAPTER_COLORS[question.chapter] || '#FAFAF8';
+  const questionBgGradient = 'linear-gradient(to bottom, #FAF8F5, #D4F0D0)';
   const transitionChapterName = nextChapter ? QUESTIONS.find((q) => q.chapter === nextChapter)?.chapterName || '' : '';
 
   const showQuestion = phase === 'question' || phase === 'fadein';
@@ -208,50 +209,57 @@ export function QuestionPage() {
         className="absolute inset-0 z-0 transition-opacity duration-500"
         style={{ opacity: showQuestion ? 1 : 0 }}
       >
-        {/* Background — solid color only, no image */}
-        <div className="absolute inset-0" style={{ backgroundColor: bgColor }} />
+        {/* Background — gradient */}
+        <div className="absolute inset-0" style={{ background: questionBgGradient }} />
 
         {/* Content */}
         <div className={`relative z-10 flex flex-col flex-1 min-h-0 max-w-[430px] mx-auto px-5 pt-4 pb-6 transition-opacity duration-300 ${phase === 'transition' ? 'opacity-0' : 'opacity-100'}`}>
-          {/* Top bar: chapter badge + progress */}
-          <div className="flex items-center justify-between flex-shrink-0">
-            <span className="px-3 py-1 bg-point text-white text-xs font-sans font-medium rounded-full shadow-md">
-              {question.chapterName}
-            </span>
-            <span className="text-white/90 text-xs font-sans font-medium">
-              {qIndex + 1} / {TOTAL_QUESTIONS}
-            </span>
-          </div>
+          {/* Top half: chapter badge + progress + question (50%) */}
+          <div className="flex flex-col items-center justify-center min-h-0 py-3" style={{ height: '50%' }}>
+            {/* Top bar: chapter badge + progress */}
+            <div className="flex items-center justify-between w-full flex-shrink-0 mb-4">
+              <span className="px-3 py-1 bg-point text-white text-xs font-sans font-medium rounded-full shadow-md">
+                {question.chapterName}
+              </span>
+              <span className="text-text/70 text-xs font-sans font-medium">
+                {qIndex + 1} / {TOTAL_QUESTIONS}
+              </span>
+            </div>
 
-          {/* Question text */}
-          <div className="flex-1 flex items-center justify-center min-h-0 py-3">
-            <div key={qIndex} className="w-full text-center animate-fadeUp">
-              {question.question.startsWith('루의 말') ? (
-                <div className="space-y-2.5">
-                  <p className="font-sans text-[11px] text-white/60 tracking-wide">
-                    {formatLuWords(question.question).label}
-                  </p>
+            {/* Question text */}
+            <div className="flex-1 flex items-center justify-center min-h-0">
+              <div key={qIndex} className="w-full text-center animate-fadeUp">
+                {question.question.startsWith('루의 말') ? (
                   <div className="space-y-2.5">
-                    {formatLuWords(question.question).sentences.map((sentence, i) => (
-                      <p
-                        key={i}
-                        className="font-batang text-[15px] leading-[1.7] text-[#E8E8E5] drop-shadow-md"
-                      >
-                        {sentence}
-                      </p>
-                    ))}
+                    <p className="font-sans text-[11px] text-text/50 tracking-wide">
+                      {formatLuWords(question.question).label}
+                    </p>
+                    <div className="space-y-2.5">
+                      {formatLuWords(question.question).sentences.map((sentence, i) => (
+                        <p
+                          key={i}
+                          className="font-batang leading-[1.7] text-text/80 drop-shadow-sm"
+                          style={{ fontSize: 'clamp(0.9rem, 2.5vw, 1.2rem)' }}
+                        >
+                          {sentence}
+                        </p>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ) : (
-                <p className="font-batang text-[15px] sm:text-base leading-[1.7] text-white drop-shadow-md">
-                  {formatLineBreaks(question.question)}
-                </p>
-              )}
+                ) : (
+                  <p
+                    className="font-batang leading-[1.7] text-text drop-shadow-sm"
+                    style={{ fontSize: 'clamp(0.9rem, 2.5vw, 1.2rem)' }}
+                  >
+                    {formatLineBreaks(question.question)}
+                  </p>
+                )}
+              </div>
             </div>
           </div>
 
-          {/* Choices */}
-          <div className="space-y-2 flex-shrink-0">
+          {/* Bottom half: choices (50%) */}
+          <div className="flex flex-col justify-center min-h-0 gap-2" style={{ height: '50%' }}>
             {question.choices.map((choice, i) => {
               const isSelected = selected === choice.text;
               return (
@@ -259,7 +267,7 @@ export function QuestionPage() {
                   key={i}
                   onClick={() => handleSelect(choice)}
                   disabled={!!selected}
-                  className={`w-full px-4 py-2.5 rounded-xl font-sans text-[13px] leading-[1.7] text-text text-left
+                  className={`w-full px-4 py-2.5 rounded-xl font-sans leading-[1.7] text-text text-left
                              transition-all duration-300
                              ${isSelected
                                ? 'bg-white border-[1.5px] border-point shadow-lg scale-[1.02]'
@@ -267,6 +275,7 @@ export function QuestionPage() {
                              }
                              ${selected && !isSelected ? 'opacity-50' : ''}
                              disabled:cursor-default`}
+                  style={{ fontSize: 'clamp(0.8rem, 2vw, 1rem)' }}
                 >
                   <span className="font-medium text-point mr-1.5">{String.fromCharCode(65 + i)}.</span>
                   {choice.text}
