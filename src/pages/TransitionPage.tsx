@@ -49,12 +49,12 @@ export function TransitionPage() {
         <h2 className="font-playfair text-3xl font-bold text-white tracking-[0.05em] mt-4 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] animate-fadeUp" style={{ animationDelay: '0.3s', opacity: 0 }}>
           기억의 숲 입구
         </h2>
-        <p className="font-sans mt-3 drop-shadow-[0_1px_3px_rgba(0,0,0,0.5)] animate-fadeUp" style={{ animationDelay: '0.5s', opacity: 0, fontSize: '0.75rem', color: 'rgba(255,255,255,0.7)' }}>
-          잠시 후 자동으로 넘어갑니다.
-        </p>
         {/* 하단: 닉네임님의 여행이 시작됩니다 (Gowun Batang, 작게) */}
-        <p className="font-batang text-sm text-white/80 mt-6 animate-fadeUp drop-shadow-[0_1px_3px_rgba(0,0,0,0.5)]" style={{ animationDelay: '0.6s', opacity: 0 }}>
+        <p className="font-batang text-sm text-white/80 mt-3 animate-fadeUp drop-shadow-[0_1px_3px_rgba(0,0,0,0.5)]" style={{ animationDelay: '0.5s', opacity: 0 }}>
           {nickname}님의 여행이 시작됩니다.
+        </p>
+        <p className="font-sans mt-8 drop-shadow-[0_1px_3px_rgba(0,0,0,0.5)] animate-fadeUp" style={{ animationDelay: '0.7s', opacity: 0, fontSize: '0.75rem', color: 'rgba(255,255,255,0.7)' }}>
+          잠시 후 자동으로 넘어갑니다.
         </p>
       </div>
     </PageContainer>

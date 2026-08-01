@@ -103,27 +103,29 @@ function ChapterTransition({ chapter, chapterName, onNext }: ChapterTransitionPr
         <h2 className="font-playfair text-3xl font-bold text-white tracking-[0.05em] mt-4 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] animate-fadeUp" style={{ animationDelay: '0.3s', opacity: 0 }}>
           {chapterName}
         </h2>
-        <p className="font-sans mt-3 drop-shadow-[0_1px_3px_rgba(0,0,0,0.5)] animate-fadeUp" style={{ animationDelay: '0.5s', opacity: 0, fontSize: '0.75rem', color: 'rgba(255,255,255,0.7)' }}>
-          잠시 후 자동으로 넘어갑니다.
-        </p>
         <div className="mt-6 flex justify-center">
           <div className="w-1 h-1 rounded-full bg-white/50 animate-pulse" />
         </div>
       </div>
 
-      {/* 하단 [다음으로 →] 버튼 */}
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          goNext();
-        }}
-        className="absolute bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-1.5 px-6 py-3
-                   bg-white/80 backdrop-blur-sm rounded-full font-sans text-sm font-medium text-text
-                   border border-white/60 shadow-md hover:bg-white hover:shadow-lg transition-all duration-300 active:scale-95"
-      >
-        다음으로
-        <ChevronRight className="w-4 h-4" />
-      </button>
+      {/* 하단: 자동 넘어감 안내 + [다음으로 →] 버튼 */}
+      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
+        <p className="font-sans drop-shadow-[0_1px_3px_rgba(0,0,0,0.5)] animate-fadeUp" style={{ animationDelay: '0.5s', opacity: 0, fontSize: '0.75rem', color: 'rgba(255,255,255,0.7)' }}>
+          잠시 후 자동으로 넘어갑니다.
+        </p>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            goNext();
+          }}
+          className="flex items-center gap-1.5 px-6 py-3
+                     bg-white/80 backdrop-blur-sm rounded-full font-sans text-sm font-medium text-text
+                     border border-white/60 shadow-md hover:bg-white hover:shadow-lg transition-all duration-300 active:scale-95"
+        >
+          다음으로
+          <ChevronRight className="w-4 h-4" />
+        </button>
+      </div>
     </div>
   );
 }
@@ -217,21 +219,21 @@ export function QuestionPage() {
 
         {/* Content */}
         <div className={`relative z-10 flex flex-col max-w-[430px] mx-auto transition-opacity duration-300 ${phase === 'transition' ? 'opacity-0' : 'opacity-100'}`} style={{ height: '100vh' }}>
-          {/* Top half: chapter badge + progress + question (50%) */}
+          {/* Top bar: chapter badge + progress — fixed at very top */}
+          <div className="flex items-center justify-between w-full flex-shrink-0" style={{ padding: '1rem 1rem 0' }}>
+            <span className="px-3 py-1 bg-point text-white text-xs font-sans font-medium rounded-full shadow-md">
+              {question.chapterName}
+            </span>
+            <span className="text-text/70 text-xs font-sans font-medium">
+              {qIndex + 1} / {TOTAL_QUESTIONS}
+            </span>
+          </div>
+
+          {/* Top half: question text only (centered) */}
           <div
             className="flex flex-col justify-center items-center"
             style={{ height: '50%', padding: '1rem' }}
           >
-            {/* Top bar: chapter badge + progress */}
-            <div className="flex items-center justify-between w-full flex-shrink-0 mb-4">
-              <span className="px-3 py-1 bg-point text-white text-xs font-sans font-medium rounded-full shadow-md">
-                {question.chapterName}
-              </span>
-              <span className="text-text/70 text-xs font-sans font-medium">
-                {qIndex + 1} / {TOTAL_QUESTIONS}
-              </span>
-            </div>
-
             {/* Question text */}
             <div key={qIndex} className="w-full text-center animate-fadeUp">
               {question.question.startsWith('루의 말') ? (
