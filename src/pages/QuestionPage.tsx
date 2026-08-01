@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback, ReactNode } from 'react';
 import { useApp } from '@/store/useApp';
 import { PageContainer } from '@/components/PageContainer';
 import { QUESTIONS, TOTAL_QUESTIONS, Choice } from '@/constants/questions';
-import { CHAPTER_BG_2, CHAPTER_BG_3, CHAPTER_BG_4, CHAPTER_BG_5, CHAPTER_BG_6 } from '@/constants/images';
+import { CHAPTER_BG_1, CHAPTER_BG_2, CHAPTER_BG_3, CHAPTER_BG_4, CHAPTER_BG_5, CHAPTER_BG_6 } from '@/constants/images';
 import { ChevronRight } from '@/components/Icons';
 
 /** 마침표 뒤엔 줄바꿈, 쉼표 뒤엔 자연스러운 줄바꿈 기회 부여 */
@@ -37,6 +37,7 @@ function formatLuWords(text: string): { label: string; sentences: string[] } {
 }
 
 const CHAPTER_BGS: Record<number, string> = {
+  1: CHAPTER_BG_1,
   2: CHAPTER_BG_2,
   3: CHAPTER_BG_3,
   4: CHAPTER_BG_4,
@@ -83,24 +84,22 @@ function ChapterTransition({ chapter, chapterName, onNext }: ChapterTransitionPr
   }, [goNext]);
 
   const bgImage = CHAPTER_BGS[chapter] || '';
-  const bgColor = CHAPTER_COLORS[chapter] || '#FAFAF8';
 
   return (
     <div
       className="absolute inset-0 z-20 flex flex-col items-center justify-center animate-fadeIn cursor-pointer"
-      style={{ backgroundColor: bgColor }}
       onClick={goNext}
     >
       {bgImage && (
-        <img src={bgImage} alt="" className="absolute inset-0 w-full h-full object-cover opacity-30 pointer-events-none" />
+        <img src={bgImage} alt="" className="absolute inset-0 w-full h-full object-cover pointer-events-none" />
       )}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/30 pointer-events-none" />
+      <div className="absolute inset-0 bg-black/10 pointer-events-none" />
       <div className="relative text-center pointer-events-none">
-        <p className="font-batang text-4xl text-text drop-shadow-lg animate-fadeUp">
-          {chapterName}
+        <p className="font-playfair text-4xl font-bold uppercase text-white tracking-[0.15em] drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] animate-fadeUp">
+          Chapter {chapter}
         </p>
         <div className="mt-6 flex justify-center">
-          <div className="w-1 h-1 rounded-full bg-text/40 animate-pulse" />
+          <div className="w-1 h-1 rounded-full bg-white/50 animate-pulse" />
         </div>
       </div>
 
@@ -190,7 +189,6 @@ export function QuestionPage() {
   };
 
   const bgColor = CHAPTER_COLORS[question.chapter] || '#FAFAF8';
-  const bgImage = CHAPTER_BGS[question.chapter] || '';
   const transitionChapterName = nextChapter ? QUESTIONS.find((q) => q.chapter === nextChapter)?.chapterName || '' : '';
 
   const showQuestion = phase === 'question' || phase === 'fadein';
@@ -202,13 +200,8 @@ export function QuestionPage() {
         className="absolute inset-0 z-0 transition-opacity duration-500"
         style={{ opacity: showQuestion ? 1 : 0 }}
       >
-        {/* Background */}
-        <div className="absolute inset-0" style={{ backgroundColor: bgColor }}>
-          {bgImage && (
-            <img src={bgImage} alt="" className="w-full h-full object-cover" />
-          )}
-        </div>
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/15 to-black/35" />
+        {/* Background — solid color only, no image */}
+        <div className="absolute inset-0" style={{ backgroundColor: bgColor }} />
 
         {/* Content */}
         <div className={`relative z-10 flex flex-col flex-1 min-h-0 max-w-[430px] mx-auto px-5 pt-4 pb-6 transition-opacity duration-300 ${phase === 'transition' ? 'opacity-0' : 'opacity-100'}`}>

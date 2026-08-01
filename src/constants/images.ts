@@ -5,18 +5,12 @@ export const FOREST_BG =
 
 export const LU_CHARACTER = '';
 
-export const CHAPTER_BG_1 =
-  'https://images.pexels.com/photos/1671325/pexels-photo-1671325.jpeg?auto=compress&cs=tinysrgb&w=1260&h=1980&dpr=1';
-export const CHAPTER_BG_2 =
-  'https://images.pexels.com/photos/1631853/pexels-photo-1631853.jpeg?auto=compress&cs=tinysrgb&w=1260&h=1980&dpr=1';
-export const CHAPTER_BG_3 =
-  'https://images.pexels.com/photos/1671325/pexels-photo-1671325.jpeg?auto=compress&cs=tinysrgb&w=1260&h=1980&dpr=1';
-export const CHAPTER_BG_4 =
-  'https://images.pexels.com/photos/1631853/pexels-photo-1631853.jpeg?auto=compress&cs=tinysrgb&w=1260&h=1980&dpr=1';
-export const CHAPTER_BG_5 =
-  'https://images.pexels.com/photos/1671325/pexels-photo-1671325.jpeg?auto=compress&cs=tinysrgb&w=1260&h=1980&dpr=1';
-export const CHAPTER_BG_6 =
-  'https://images.pexels.com/photos/1631853/pexels-photo-1631853.jpeg?auto=compress&cs=tinysrgb&w=1260&h=1980&dpr=1';
+export const CHAPTER_BG_1 = '/chapter1-bg.png';
+export const CHAPTER_BG_2 = '/chapter2-bg.png';
+export const CHAPTER_BG_3 = '/chapter3-bg.png';
+export const CHAPTER_BG_4 = '/chapter4-bg.png';
+export const CHAPTER_BG_5 = '/chapter5-bg.png';
+export const CHAPTER_BG_6 = '/chapter6-bg.png';
 
 export const RESIDENT_CARD = '';
 
