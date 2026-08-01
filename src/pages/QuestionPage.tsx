@@ -94,10 +94,15 @@ function ChapterTransition({ chapter, chapterName, onNext }: ChapterTransitionPr
         <img src={bgImage} alt="" className="absolute inset-0 w-full h-full object-cover pointer-events-none" />
       )}
       <div className="absolute inset-0 bg-black/10 pointer-events-none" />
-      <div className="relative text-center pointer-events-none">
-        <p className="font-playfair text-4xl font-bold uppercase text-white tracking-[0.15em] drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] animate-fadeUp">
+      <div className="relative text-center pointer-events-none flex flex-col items-center">
+        {/* 상단: CHAPTER N (Pretendard, 작게, 자간 넓게) */}
+        <p className="font-sans text-xs text-white/80 tracking-[0.3em] uppercase drop-shadow-[0_1px_3px_rgba(0,0,0,0.5)] animate-fadeUp">
           Chapter {chapter}
         </p>
+        {/* 중앙: 챕터 이름 (Playfair Display, 크게) */}
+        <h2 className="font-playfair text-3xl font-bold text-white tracking-[0.05em] mt-4 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] animate-fadeUp" style={{ animationDelay: '0.3s', opacity: 0 }}>
+          {chapterName}
+        </h2>
         <div className="mt-6 flex justify-center">
           <div className="w-1 h-1 rounded-full bg-white/50 animate-pulse" />
         </div>

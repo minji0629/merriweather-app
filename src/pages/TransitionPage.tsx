@@ -41,13 +41,16 @@ export function TransitionPage() {
           phase === 'chapter' ? 'opacity-100' : 'opacity-0'
         }`}
       >
-        <h2 className="font-playfair text-4xl font-bold uppercase text-white tracking-[0.15em] drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] animate-scaleIn">
+        {/* 상단: CHAPTER 1 (Pretendard, 작게, 자간 넓게) */}
+        <p className="font-sans text-xs text-white/80 tracking-[0.3em] uppercase drop-shadow-[0_1px_3px_rgba(0,0,0,0.5)] animate-fadeUp">
           Chapter 1
-        </h2>
-        <p className="font-batang text-base text-white/90 mt-4 animate-fadeUp drop-shadow-[0_1px_3px_rgba(0,0,0,0.5)]" style={{ animationDelay: '0.5s', opacity: 0 }}>
-          기억의 숲
         </p>
-        <p className="font-sans text-sm text-white/70 mt-3 animate-fadeUp drop-shadow-[0_1px_3px_rgba(0,0,0,0.5)]" style={{ animationDelay: '0.8s', opacity: 0 }}>
+        {/* 중앙: 기억의 숲 입구 (Playfair Display, 크게) */}
+        <h2 className="font-playfair text-3xl font-bold text-white tracking-[0.05em] mt-4 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] animate-fadeUp" style={{ animationDelay: '0.3s', opacity: 0 }}>
+          기억의 숲 입구
+        </h2>
+        {/* 하단: 닉네임님의 여행이 시작됩니다 (Gowun Batang, 작게) */}
+        <p className="font-batang text-sm text-white/80 mt-6 animate-fadeUp drop-shadow-[0_1px_3px_rgba(0,0,0,0.5)]" style={{ animationDelay: '0.6s', opacity: 0 }}>
           {nickname}님의 여행이 시작됩니다.
         </p>
       </div>

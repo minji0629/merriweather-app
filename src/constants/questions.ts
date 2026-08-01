@@ -279,11 +279,11 @@ export const QUESTIONS: Question[] = [
       { text: '잠깐 실제로 걸어보며 길의 느낌을 확인한다', scores: { D4: 1, D5: 1 } },
     ],
   },
-  // ── Chapter 6 — 마지막 갈림길 (Q21~Q25) ──
+  // ── Chapter 6 — 중심의 나무 (Q21~Q25) ──
   {
     id: 21,
     chapter: 6,
-    chapterName: '마지막 갈림길',
+    chapterName: '중심의 나무',
     question: '루의 말\n"이제 곧 숲을 떠나게 될 거야."\n"하지만 사람마다..."\n"오래도록 마음속에 남는 건 조금씩 다르더라."\n"너라면 무엇이 가장 오래 마음에 남을 것 같아?"',
     choices: [
       { text: '함께 걸으며 느꼈던 시간들', scores: { D6: -2 } },
@@ -295,7 +295,7 @@ export const QUESTIONS: Question[] = [
   {
     id: 22,
     chapter: 6,
-    chapterName: '마지막 갈림길',
+    chapterName: '중심의 나무',
     question: '루의 말\n"숲에서는..."\n"생각했던 대로 흘러가는 날도 있었고."\n"전혀 예상하지 못한 길을 만나기도 했지."\n"그럴 때 너는 어떤 모습에 가장 가까울 것 같아?"',
     choices: [
       { text: '가능하면 처음 정한 계획대로 다시 길을 이어가려고 한다', scores: { D3: 2 } },
@@ -307,7 +307,7 @@ export const QUESTIONS: Question[] = [
   {
     id: 23,
     chapter: 6,
-    chapterName: '마지막 갈림길',
+    chapterName: '중심의 나무',
     question: '루의 말\n"이 숲에서는..."\n"가끔 누구도 예상하지 못한 일이 일어나곤 해."\n"그럴 때 사람들은 저마다 다른 방식으로 그 일을 마주하더라."\n"너는 가장 먼저 어떤 쪽으로 마음이 움직일 것 같아?"',
     choices: [
       { text: '왜 이런 일이 생겼는지 궁금해서 끝까지 알아보고 싶어진다', scores: { D2: -2 } },
@@ -319,7 +319,7 @@ export const QUESTIONS: Question[] = [
   {
     id: 24,
     chapter: 6,
-    chapterName: '마지막 갈림길',
+    chapterName: '중심의 나무',
     question: '루의 말\n"앞에는 아직 아무도 가보지 않은 길이 하나 있어."\n"꼭 가야 하는 건 아니야."\n"이 길을 바라본 순간, 가장 먼저 어떤 마음이 들 것 같아?"',
     choices: [
       {
@@ -347,7 +347,7 @@ export const QUESTIONS: Question[] = [
   {
     id: 25,
     chapter: 6,
-    chapterName: '마지막 갈림길',
+    chapterName: '중심의 나무',
     question: '루의 말\n"숲의 끝이 보이기 시작했어."\n"이제 곧 너는 이 숲을 떠나게 될 거야."\n"뒤를 돌아보니,"\n"네가 걸어온 길은 어느새 숲속으로 천천히 사라지고 있었어."\n"그 순간, 가장 먼저 드는 마음은 뭐야?"',
     choices: [
       { text: '"끝이라기보다 또 다른 시작처럼 느껴진다."', scores: { D4: 2, D6: 1 } },
