@@ -36,7 +36,7 @@ export function HamburgerMenu() {
       <button
         onClick={() => setOpen(true)}
         className="fixed top-4 right-4 z-[60] w-11 h-11 flex flex-col items-center justify-center gap-1.5
-                   bg-black/10 backdrop-blur-sm rounded-full active:scale-90 transition-transform duration-200"
+                   active:scale-90 transition-transform duration-200"
         aria-label="메뉴"
       >
         <span className="w-5 h-0.5 bg-white rounded-full drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]" />

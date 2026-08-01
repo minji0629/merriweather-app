@@ -220,7 +220,7 @@ export function QuestionPage() {
         {/* Content */}
         <div className={`relative z-10 flex flex-col max-w-[430px] mx-auto transition-opacity duration-300 ${phase === 'transition' ? 'opacity-0' : 'opacity-100'}`} style={{ height: '100vh' }}>
           {/* Top bar: chapter badge + progress — fixed at very top */}
-          <div className="flex items-center justify-between w-full flex-shrink-0" style={{ padding: '1rem 1rem 0' }}>
+          <div className="flex items-center justify-between w-full flex-shrink-0" style={{ padding: '1rem 3.5rem 0 1rem' }}>
             <span className="px-3 py-1 bg-point text-white text-xs font-sans font-medium rounded-full shadow-md">
               {question.chapterName}
             </span>
