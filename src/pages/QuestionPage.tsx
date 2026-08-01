@@ -53,7 +53,7 @@ const CHAPTER_COLORS: Record<number, string> = {
   6: '#E8D4E8',
 };
 
-type Phase = 'question' | 'transition' | 'fadein';
+type Phase = 'intro' | 'question' | 'transition' | 'fadein';
 
 /* ── Chapter transition overlay (self-contained component) ── */
 
@@ -126,8 +126,9 @@ export function QuestionPage() {
   const { setCurrentPage, addAnswer } = useApp();
   const [qIndex, setQIndex] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
-  const [phase, setPhase] = useState<Phase>('question');
+  const [phase, setPhase] = useState<Phase>('intro');
   const [nextChapter, setNextChapter] = useState<number | null>(null);
+  const [introChapter] = useState<number>(QUESTIONS[0].chapter);
 
   const question = QUESTIONS[qIndex];
   const advanceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -192,6 +193,8 @@ export function QuestionPage() {
   const transitionChapterName = nextChapter ? QUESTIONS.find((q) => q.chapter === nextChapter)?.chapterName || '' : '';
 
   const showQuestion = phase === 'question' || phase === 'fadein';
+
+  const introChapterName = QUESTIONS.find((q) => q.chapter === introChapter)?.chapterName || '';
 
   return (
     <PageContainer className="bg-black" footer={false}>
@@ -275,6 +278,15 @@ export function QuestionPage() {
           chapter={nextChapter}
           chapterName={transitionChapterName}
           onNext={advanceToNextQuestion}
+        />
+      )}
+
+      {/* Intro transition — shown before the first question */}
+      {phase === 'intro' && (
+        <ChapterTransition
+          chapter={introChapter}
+          chapterName={introChapterName}
+          onNext={() => setPhase('question')}
         />
       )}
     </PageContainer>
