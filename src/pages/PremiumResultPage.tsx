@@ -8,6 +8,7 @@ import { hasFinalConsonant } from '@/lib/korean';
 import { generateGaul, generateLetter, answerQuestion } from '@/lib/claude';
 import { fetchUserResults, fetchQuestions, fetchLatestQuestionsByUser, createDefaultQuestions, decrementQuestion, QuestionRow } from '@/lib/supabase';
 import { Sparkles, Send, Share2, Gift } from '@/components/Icons';
+import ResidentFlipCard from '@/components/ResidentFlipCard';
 
 export function PremiumResultPage() {
   const { nickname, setCurrentPage, residentKey, secondResidentKey, restart, previousPage } = useApp();
@@ -211,34 +212,33 @@ export function PremiumResultPage() {
 
           {/* Resident card */}
           <div className="flex flex-col items-center mb-8 animate-fadeUp">
-            <div
-              className="relative overflow-hidden"
-              style={{
-                width: '280px',
-                height: '380px',
-                border: '2px solid #C9A84C',
-                borderRadius: '12px',
-                boxShadow: '0 0 0 6px #f5f0e0, 0 0 0 8px #C9A84C',
-                background: '#f5f0e0',
-                padding: '8px',
-              }}
-            >
-              {RESIDENT_IMAGES[residentKey!] ? (
-                <img src={RESIDENT_IMAGES[residentKey!]} alt={RESULT.name} className="w-full h-full object-cover" style={{ borderRadius: '8px' }} />
-              ) : (
-                <>
-                  <div className="absolute top-3 right-3 px-2 py-0.5 bg-golden/80 rounded-full text-[10px] font-sans text-text">
-                    MERRIWEATHER
-                  </div>
-                  <div className="w-24 h-24 rounded-full bg-gradient-to-b from-point-light/50 to-point/40 flex items-center justify-center mb-4 shadow-inner mx-auto mt-6">
-                    <span className="text-4xl">{RESULT.emoji}</span>
-                  </div>
-                  <p className="text-xs font-sans text-text-sub mb-1 text-center">주민등록증</p>
-                  <p className="font-batang text-lg text-text text-center">{RESULT.name}</p>
-                  <p className="text-[10px] font-sans text-text-sub mt-1 text-center">No. {nickname || 'GUEST'}-001</p>
-                </>
-              )}
-            </div>
+            {RESIDENT_IMAGES[residentKey!] ? (
+              <ResidentFlipCard
+                frontImage={RESIDENT_IMAGES[residentKey!]}
+                alt={RESULT.name}
+              />
+            ) : (
+              <div
+                className="relative overflow-hidden flex flex-col items-center justify-center"
+                style={{
+                  width: '280px',
+                  height: '380px',
+                  border: '2px solid #C9A84C',
+                  borderRadius: '12px',
+                  background: '#f5f0e0',
+                }}
+              >
+                <div className="absolute top-3 right-3 px-2 py-0.5 bg-golden/80 rounded-full text-[10px] font-sans text-text">
+                  MERRIWEATHER
+                </div>
+                <div className="w-24 h-24 rounded-full bg-gradient-to-b from-point-light/50 to-point/40 flex items-center justify-center mb-4 shadow-inner">
+                  <span className="text-4xl">{RESULT.emoji}</span>
+                </div>
+                <p className="text-xs font-sans text-text-sub mb-1">주민등록증</p>
+                <p className="font-batang text-lg text-text">{RESULT.name}</p>
+                <p className="text-[10px] font-sans text-text-sub mt-1">No. {nickname || 'GUEST'}-001</p>
+              </div>
+            )}
           </div>
 
           {/* Name + intro */}
