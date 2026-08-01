@@ -1,5 +1,4 @@
-export const LANDING_BG =
-  'https://images.pexels.com/photos/1671325/pexels-photo-1671325.jpeg?auto=compress&cs=tinysrgb&w=1260&h=1980&dpr=1';
+export const LANDING_BG = '/landing-bg.jpg';
 
 export const FOREST_BG =
   'https://images.pexels.com/photos/1671325/pexels-photo-1671325.jpeg?auto=compress&cs=tinysrgb&w=1260&h=1980&dpr=1';
