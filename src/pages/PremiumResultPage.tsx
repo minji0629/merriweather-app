@@ -188,7 +188,7 @@ export function PremiumResultPage() {
       <div className="overflow-y-auto scrollbar-hide flex-1 min-h-0">
         <div className="px-6 pt-10 pb-8">
           {/* Top bar */}
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-4 pr-14 sm:pr-0">
             {previousPage === 'archive' ? (
               <button
                 onClick={() => setCurrentPage('archive')}

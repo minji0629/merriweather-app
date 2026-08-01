@@ -35,18 +35,19 @@ export function HamburgerMenu() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="fixed top-5 right-5 z-40 flex flex-col items-center justify-center gap-1.5"
+        className="fixed top-4 right-4 z-[60] w-11 h-11 flex flex-col items-center justify-center gap-1.5
+                   bg-black/10 backdrop-blur-sm rounded-full active:scale-90 transition-transform duration-200"
         aria-label="메뉴"
       >
-        <span className="w-5 h-0.5 bg-white rounded-full drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]" />
-        <span className="w-5 h-0.5 bg-white rounded-full drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]" />
-        <span className="w-5 h-0.5 bg-white rounded-full drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]" />
+        <span className="w-5 h-0.5 bg-white rounded-full drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]" />
+        <span className="w-5 h-0.5 bg-white rounded-full drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]" />
+        <span className="w-5 h-0.5 bg-white rounded-full drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]" />
       </button>
 
       {open && (
         <>
-          <div className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm" onClick={() => setOpen(false)} />
-          <div className="fixed top-0 right-0 z-50 w-64 h-full bg-base shadow-2xl animate-slideIn flex flex-col">
+          <div className="fixed inset-0 z-[60] bg-black/30 backdrop-blur-sm" onClick={() => setOpen(false)} />
+          <div className="fixed top-0 right-0 z-[70] w-64 h-full bg-base shadow-2xl animate-slideIn flex flex-col">
             <div className="flex items-center justify-between p-5 border-b border-[#E0DDD8]">
               <span className="font-batang text-lg text-text">메뉴</span>
               <button

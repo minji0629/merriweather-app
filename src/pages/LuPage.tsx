@@ -42,7 +42,7 @@ export function LuPage() {
       {/* Skip button - top right */}
       <button
         onClick={handleSkip}
-        className="absolute top-5 right-5 z-30 flex items-center gap-1 px-3 py-1.5 text-sm font-sans text-text-sub
+        className="absolute top-4 left-4 z-30 flex items-center gap-1 px-3 py-1.5 text-sm font-sans text-text-sub
                    rounded-full bg-white/60 backdrop-blur-sm hover:bg-white/90 hover:text-text transition-all duration-300"
       >
         숲으로 들어가기
