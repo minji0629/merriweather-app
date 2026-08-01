@@ -96,7 +96,45 @@ export function PaymentPage() {
                 <p className="font-sans text-xs text-text-sub line-through">8,900원</p>
               </div>
             </div>
-            <p className="font-sans text-sm text-text-sub ml-7">전체 결과 10개 섹션 + 루의 편지</p>
+            <div className="mt-4 ml-7 space-y-3">
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-point-dark">✦</span>
+                  <span className="font-sans font-medium text-sm text-text">나만을 위한 8가지 심층 분석</span>
+                </div>
+                <p className="font-sans text-xs text-text-sub ml-5 mt-0.5 leading-relaxed">
+                  당신이라는 사람 / 강점이 빛나는 순간 /<br />당신이 반복하는 패턴 / 당신을 움직이는 진짜 이유 /<br />관계 속의 당신 / 당신이 성장하는 방식 /<br />당신 안에 숨겨진 가능성 / 당신 안에 흐르는 결
+                </p>
+              </div>
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-point-dark">✦</span>
+                  <span className="font-sans font-medium text-sm text-text">나에게 맞춰 쓰인 루의 편지</span>
+                </div>
+                <p className="font-sans text-xs text-text-sub ml-5 mt-0.5">나의 결과를 바탕으로 루가 직접 써준 편지</p>
+              </div>
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-point-dark">✦</span>
+                  <span className="font-sans font-medium text-sm text-text">루에게 질문 1회</span>
+                </div>
+                <p className="font-sans text-xs text-text-sub ml-5 mt-0.5">결과에 대해 루에게 직접 물어볼 수 있어요</p>
+              </div>
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-point-dark">✦</span>
+                  <span className="font-sans font-medium text-sm text-text">결과 영구 저장</span>
+                </div>
+                <p className="font-sans text-xs text-text-sub ml-5 mt-0.5">언제든 보관함에서 다시 확인 가능</p>
+              </div>
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-point-dark">✦</span>
+                  <span className="font-sans font-medium text-sm text-text">다음 시즌 예고</span>
+                </div>
+                <p className="font-sans text-xs text-text-sub ml-5 mt-0.5">메리웨더의 새로운 여행을 가장 먼저 만나요</p>
+              </div>
+            </div>
             <div className="mt-3 ml-7 flex items-center gap-1.5">
               <Clock className="w-3.5 h-3.5 text-point" />
               <p className="font-sans text-xs text-point-dark">베타 오픈 기간 한정</p>
@@ -131,7 +169,16 @@ export function PaymentPage() {
                 <p className="font-sans text-xs text-text-sub line-through">10,890원</p>
               </div>
             </div>
-            <p className="font-sans text-sm text-text-sub ml-7">전체 결과 + 루에게 추가 질문 2회</p>
+            <div className="mt-4 ml-7 space-y-3">
+              <p className="font-sans text-xs text-text-sub">위 탐험권 혜택 모두 포함</p>
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-point-dark">✦</span>
+                  <span className="font-sans font-medium text-sm text-text">루에게 질문 3회 (기본 1회 + 추가 2회)</span>
+                </div>
+                <p className="font-sans text-xs text-text-sub ml-5 mt-0.5">결과에 대해 루에게 더 깊이 물어볼 수 있어요</p>
+              </div>
+            </div>
             <div className="mt-3 ml-7 flex items-center gap-1.5">
               <Clock className="w-3.5 h-3.5 text-point" />
               <p className="font-sans text-xs text-point-dark">베타 오픈 기간 한정</p>
