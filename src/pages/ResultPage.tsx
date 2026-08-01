@@ -8,12 +8,26 @@ import { Lock, Share2, Sparkles, Check, Gift, Ticket } from '@/components/Icons'
 import ResidentFlipCard from '@/components/ResidentFlipCard';
 import { GiftCodeModal } from '@/components/GiftCodeModal';
 
+const PREMIUM_SECTIONS = [
+  '당신이라는 사람',
+  '당신 안에 흐르는 결',
+  '강점이 빛나는 순간',
+  '당신이 반복하는 패턴',
+  '당신을 움직이는 진짜 이유',
+  '관계 속의 당신',
+  '당신이 성장하는 방식',
+  '당신 안에 숨겨진 가능성',
+  '나에게 맞춰 쓰인 루의 편지',
+  '루에게 질문하기',
+];
+
 export function ResultPage() {
   const { nickname, setCurrentPage, residentKey, selectedResidentKey, previewMode, restart, previousPage } = useApp();
   const { user, login } = useAuth();
   const { currentPage } = useApp();
   const [showSavePrompt, setShowSavePrompt] = useState(false);
   const [showGiftCode, setShowGiftCode] = useState(false);
+  const [previewExpanded, setPreviewExpanded] = useState(false);
   const effectiveKey = selectedResidentKey ?? residentKey;
   const RESULT = effectiveKey ? getResidentProfile(effectiveKey) : null;
 
@@ -146,36 +160,44 @@ export function ResultPage() {
             </div>
           </div>
 
-          {/* Locked sections preview */}
+          {/* Premium content preview */}
           <div className="mb-8 animate-fadeUp" style={{ animationDelay: '0.9s', opacity: 0 }}>
-            <h2 className="font-batang text-lg text-text-sub mb-4">더 알아보기</h2>
-            <div className="relative">
-              <div className="space-y-3 filter blur-[5px] select-none pointer-events-none">
-                <div className="p-4 bg-white rounded-xl border border-[#E0DDD8]">
-                  <p className="font-batang text-sm text-text mb-2">당신이 걷는 숲의 길</p>
-                  <div className="h-3 bg-[#E0DDD8] rounded w-full mb-2" />
-                  <div className="h-3 bg-[#E0DDD8] rounded w-3/4" />
-                </div>
-                <div className="p-4 bg-white rounded-xl border border-[#E0DDD8]">
-                  <p className="font-batang text-sm text-text mb-2">당신에게 어울리는 풍경</p>
-                  <div className="h-3 bg-[#E0DDD8] rounded w-full mb-2" />
-                  <div className="h-3 bg-[#E0DDD8] rounded w-2/3" />
-                </div>
-                <div className="p-4 bg-white rounded-xl border border-[#E0DDD8]">
-                  <p className="font-batang text-sm text-text mb-2">루의 추천 산책길</p>
-                  <div className="h-3 bg-[#E0DDD8] rounded w-full mb-2" />
-                  <div className="h-3 bg-[#E0DDD8] rounded w-4/5" />
-                </div>
-              </div>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="flex flex-col items-center gap-2">
-                  <div className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center shadow-lg">
-                    <Lock className="w-5 h-5 text-text-sub" />
+            <p className="font-batang text-sm text-text-sub mb-4 text-center">
+              탐험권으로 10가지를 더 알 수 있어요.
+            </p>
+            <div className="space-y-2.5">
+              {PREMIUM_SECTIONS.map((title, i) => (
+                <div
+                  key={i}
+                  className="p-4 bg-white rounded-xl border border-[#E0DDD8] relative overflow-hidden"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <span className="flex-shrink-0 w-6 h-6 rounded-full bg-point/15 text-point-dark text-xs font-sans font-bold flex items-center justify-center">
+                      {i + 1}
+                    </span>
+                    <p className="font-batang text-sm text-text">{title}</p>
+                    <Lock className="w-3.5 h-3.5 text-text-sub ml-auto flex-shrink-0" />
                   </div>
-                  <p className="font-sans text-sm text-text-sub">탐험권으로 열 수 있어요</p>
+                  <div
+                    className="mt-2.5 space-y-1.5 select-none pointer-events-none"
+                    style={{ filter: 'blur(4px)' }}
+                  >
+                    <div className="h-2.5 bg-[#E0DDD8] rounded w-full" />
+                    <div className="h-2.5 bg-[#E0DDD8] rounded w-5/6" />
+                    <div className="h-2.5 bg-[#E0DDD8] rounded w-3/4" />
+                  </div>
                 </div>
-              </div>
+              ))}
             </div>
+            <button
+              onClick={() => setPreviewExpanded((v) => !v)}
+              className="mt-4 w-full py-3 bg-white border border-[#E0DDD8] rounded-xl font-sans text-sm text-text-sub
+                         hover:border-point hover:text-point transition-all duration-300 active:scale-95
+                         flex items-center justify-center gap-1.5"
+            >
+              {previewExpanded ? '접기' : '더 알아보기'}
+              <span className="text-xs">{previewExpanded ? '∧' : '∨'}</span>
+            </button>
           </div>
         </div>
 
