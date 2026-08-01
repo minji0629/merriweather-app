@@ -6,7 +6,18 @@ import { RESIDENT_IMAGES } from '@/constants/images';
 import { getResidentProfile, withNickname, RESIDENT_FEATURES } from '@/constants/residents';
 import { hasFinalConsonant } from '@/lib/korean';
 import { generateGaul, generateLetter, answerQuestion } from '@/lib/claude';
-import { fetchUserResults, fetchQuestions, fetchLatestQuestionsByUser, createDefaultQuestions, decrementQuestion, QuestionRow } from '@/lib/supabase';
+import {
+  fetchUserResults,
+  fetchResultById,
+  fetchQuestions,
+  fetchLatestQuestionsByUser,
+  createDefaultQuestions,
+  decrementQuestion,
+  saveAiText,
+  appendQuestionHistory,
+  QuestionRow,
+  QuestionHistoryEntry,
+} from '@/lib/supabase';
 import { Sparkles, Send, Share2, Gift } from '@/components/Icons';
 import ResidentFlipCard from '@/components/ResidentFlipCard';
 
@@ -32,38 +43,86 @@ export function PremiumResultPage() {
   const [askError, setAskError] = useState(false);
   const [questionRow, setQuestionRow] = useState<QuestionRow | null>(null);
   const [resultId, setResultId] = useState<string | null>(null);
+  const [history, setHistory] = useState<QuestionHistoryEntry[]>([]);
 
+  // AI 텍스트(결/편지) 로드 — 저장된 값이 있으면 그대로 사용, 없으면 생성 후 저장
   useEffect(() => {
     if (!RESULT || !effectiveKey) return;
     let cancelled = false;
 
     (async () => {
-      try {
-        const text = await generateGaul(nickname || '여행자', effectiveKey, secondKey);
-        if (!cancelled) setGaulText(text);
-      } catch {
-        if (!cancelled) setGaulError(true);
-      } finally {
-        if (!cancelled) setGaulLoading(false);
-      }
-    })();
+      const targetId = selectedResultId;
+      let savedAiResult: string | null = null;
+      let savedAiLetter: string | null = null;
 
-    (async () => {
-      try {
-        const text = await generateLetter(nickname || '여행자', effectiveKey, secondKey);
-        if (!cancelled) setLetterText(text);
-      } catch {
-        if (!cancelled) setLetterError(true);
-      } finally {
-        if (!cancelled) setLetterLoading(false);
+      if (targetId) {
+        console.log('[Archive] AI 텍스트 로드 시도, result_id:', targetId);
+        const row = await fetchResultById(targetId);
+        savedAiResult = row?.ai_result ?? null;
+        savedAiLetter = row?.ai_letter ?? null;
+        console.log('[Archive] 저장된 ai_result:', savedAiResult ? `${savedAiResult.slice(0, 30)}...` : null);
+        console.log('[Archive] 저장된 ai_letter:', savedAiLetter ? `${savedAiLetter.slice(0, 30)}...` : null);
+      }
+
+      // 결 (gaul)
+      if (savedAiResult) {
+        if (!cancelled) {
+          setGaulText(savedAiResult);
+          setGaulLoading(false);
+        }
+      } else {
+        setGaulLoading(true);
+        try {
+          const text = await generateGaul(nickname || '여행자', effectiveKey, secondKey);
+          if (!cancelled) {
+            setGaulText(text);
+            setGaulLoading(false);
+          }
+          if (targetId) {
+            console.log('[Archive] AI 결 생성 완료, 저장 중...');
+            await saveAiText(targetId, 'ai_result', text);
+          }
+        } catch {
+          if (!cancelled) {
+            setGaulError(true);
+            setGaulLoading(false);
+          }
+        }
+      }
+
+      // 편지 (letter)
+      if (savedAiLetter) {
+        if (!cancelled) {
+          setLetterText(savedAiLetter);
+          setLetterLoading(false);
+        }
+      } else {
+        setLetterLoading(true);
+        try {
+          const text = await generateLetter(nickname || '여행자', effectiveKey, secondKey);
+          if (!cancelled) {
+            setLetterText(text);
+            setLetterLoading(false);
+          }
+          if (targetId) {
+            console.log('[Archive] AI 편지 생성 완료, 저장 중...');
+            await saveAiText(targetId, 'ai_letter', text);
+          }
+        } catch {
+          if (!cancelled) {
+            setLetterError(true);
+            setLetterLoading(false);
+          }
+        }
       }
     })();
 
     return () => {
       cancelled = true;
     };
-  }, [RESULT, effectiveKey, secondKey, nickname]);
+  }, [RESULT, effectiveKey, secondKey, nickname, selectedResultId]);
 
+  // 질문 로드 — 저장된 question_history 표시
   useEffect(() => {
     if (!user) return;
     let cancelled = false;
@@ -95,7 +154,11 @@ export function PremiumResultPage() {
       }
 
       console.log('[Archive] 테이블에서 불러온 횟수:', qRow?.remaining_count ?? 0);
-      if (!cancelled) setQuestionRow(qRow);
+      console.log('[Archive] 저장된 질문 내역:', qRow?.question_history ?? []);
+      if (!cancelled) {
+        setQuestionRow(qRow);
+        setHistory(qRow?.question_history ?? []);
+      }
     })();
     return () => {
       cancelled = true;
@@ -112,6 +175,17 @@ export function PremiumResultPage() {
     try {
       const text = await answerQuestion(nickname || '여행자', effectiveKey, secondKey, question.trim());
       setLuAnswer(text);
+
+      const entry: QuestionHistoryEntry = {
+        question: question.trim(),
+        answer: text,
+        created_at: new Date().toISOString(),
+      };
+      const okHistory = await appendQuestionHistory(questionRow.id, entry);
+      if (okHistory) {
+        setHistory((prev) => [...prev, entry]);
+      }
+
       const ok = await decrementQuestion(questionRow.id, questionRow.remaining_count);
       if (ok) {
         setQuestionRow({ ...questionRow, remaining_count: questionRow.remaining_count - 1 });
@@ -311,7 +385,20 @@ export function PremiumResultPage() {
                         </div>
                       )}
 
-                      {remainingCount <= 0 && !luAnswer && !isAsking && (
+                      {/* 저장된 질문/답변 내역 */}
+                      {history.length > 0 && (
+                        <div className="mt-4 space-y-3">
+                          <p className="text-xs font-sans text-text-sub mb-1">이전 질문 내역</p>
+                          {history.map((h, i) => (
+                            <div key={i} className="p-4 bg-base rounded-xl border border-[#E0DDD8]">
+                              <p className="font-sans text-xs text-text-sub mb-1">Q. {h.question}</p>
+                              <p className="font-batang text-sm text-text leading-relaxed pt-1 whitespace-pre-line">A. {h.answer}</p>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {remainingCount <= 0 && !luAnswer && !isAsking && history.length === 0 && (
                         <p className="font-batang text-sm text-text-sub text-center py-4">
                           남은 질문 횟수가 없어요. 추가 질문권을 구매하면 더 물어볼 수 있어요.
                         </p>

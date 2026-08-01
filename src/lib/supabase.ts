@@ -24,6 +24,8 @@ export interface ResultRow {
   resident_key: string;
   answers: Record<string, unknown>;
   is_paid: boolean;
+  ai_result: string | null;
+  ai_letter: string | null;
   created_at: string;
 }
 
@@ -51,11 +53,18 @@ export interface GiftCodeRow {
   created_at: string;
 }
 
+export interface QuestionHistoryEntry {
+  question: string;
+  answer: string;
+  created_at: string;
+}
+
 export interface QuestionRow {
   id: string;
   user_id: string;
   result_id: string;
   remaining_count: number;
+  question_history: QuestionHistoryEntry[] | null;
   created_at: string;
 }
 
@@ -170,7 +179,7 @@ export async function markLatestResultPaid(userId: string): Promise<boolean> {
 export async function fetchUserResults(userId: string): Promise<ResultRow[]> {
   const { data, error } = await supabase
     .from('results')
-    .select('id, user_id, resident_key, is_paid, created_at')
+    .select('id, user_id, resident_key, is_paid, ai_result, ai_letter, created_at')
     .eq('user_id', userId)
     .order('created_at', { ascending: false });
 
@@ -185,7 +194,7 @@ export async function fetchUserResults(userId: string): Promise<ResultRow[]> {
 export async function fetchResultById(resultId: string): Promise<ResultRow | null> {
   const { data, error } = await supabase
     .from('results')
-    .select('id, user_id, resident_key, is_paid, created_at')
+    .select('id, user_id, resident_key, is_paid, ai_result, ai_letter, created_at')
     .eq('id', resultId)
     .maybeSingle();
 
@@ -194,6 +203,50 @@ export async function fetchResultById(resultId: string): Promise<ResultRow | nul
     return null;
   }
   return data as ResultRow | null;
+}
+
+/** results 테이블에 AI 생성 텍스트(결/편지)를 저장한다 */
+export async function saveAiText(
+  resultId: string,
+  field: 'ai_result' | 'ai_letter',
+  text: string,
+): Promise<boolean> {
+  const { error } = await supabase
+    .from('results')
+    .update({ [field]: text })
+    .eq('id', resultId);
+  if (error) {
+    console.error(`[Supabase] saveAiText (${field}) error:`, error.message);
+    return false;
+  }
+  return true;
+}
+
+/** questions 테이블의 question_history에 질문/답변을 추가한다 */
+export async function appendQuestionHistory(
+  questionId: string,
+  entry: QuestionHistoryEntry,
+): Promise<boolean> {
+  const { data, error } = await supabase
+    .from('questions')
+    .select('question_history')
+    .eq('id', questionId)
+    .maybeSingle();
+  if (error) {
+    console.error('[Supabase] appendQuestionHistory fetch error:', error.message);
+    return false;
+  }
+  const existing = (data?.question_history as QuestionHistoryEntry[] | null) ?? [];
+  const updated = [...existing, entry];
+  const { error: updateError } = await supabase
+    .from('questions')
+    .update({ question_history: updated })
+    .eq('id', questionId);
+  if (updateError) {
+    console.error('[Supabase] appendQuestionHistory update error:', updateError.message);
+    return false;
+  }
+  return true;
 }
 
 /**
