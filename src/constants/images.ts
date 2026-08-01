@@ -3,7 +3,7 @@ export const LANDING_BG = '/u4332239835_an_anime_style_digital_painting_of_a_coa
 export const FOREST_BG =
   'https://images.pexels.com/photos/1671325/pexels-photo-1671325.jpeg?auto=compress&cs=tinysrgb&w=1260&h=1980&dpr=1';
 
-export const LU_CHARACTER = '';
+export const LU_CHARACTER = '/lu.png';
 
 export const CHAPTER_BG_1 = '/chapter1-bg.png';
 export const CHAPTER_BG_2 = '/chapter2-bg.png';
