@@ -11,8 +11,12 @@ import { Sparkles, Send, Share2, Gift } from '@/components/Icons';
 import ResidentFlipCard from '@/components/ResidentFlipCard';
 
 export function PremiumResultPage() {
-  const { nickname, setCurrentPage, residentKey, secondResidentKey, restart, previousPage } = useApp();
+  const { nickname, setCurrentPage, residentKey, secondResidentKey, selectedResidentKey, selectedResultId, restart, previousPage } = useApp();
   const { user } = useAuth();
+
+  const effectiveKey = selectedResidentKey ?? residentKey;
+  const RESULT = effectiveKey ? getResidentProfile(effectiveKey) : null;
+  const secondKey = secondResidentKey ?? effectiveKey;
 
   const [gaulText, setGaulText] = useState('');
   const [gaulLoading, setGaulLoading] = useState(true);
@@ -29,15 +33,13 @@ export function PremiumResultPage() {
   const [questionRow, setQuestionRow] = useState<QuestionRow | null>(null);
   const [resultId, setResultId] = useState<string | null>(null);
 
-  const RESULT = residentKey ? getResidentProfile(residentKey) : null;
-
   useEffect(() => {
-    if (!RESULT || !residentKey) return;
+    if (!RESULT || !effectiveKey) return;
     let cancelled = false;
 
     (async () => {
       try {
-        const text = await generateGaul(nickname || '여행자', residentKey, secondResidentKey ?? residentKey);
+        const text = await generateGaul(nickname || '여행자', effectiveKey, secondKey);
         if (!cancelled) setGaulText(text);
       } catch {
         if (!cancelled) setGaulError(true);
@@ -48,7 +50,7 @@ export function PremiumResultPage() {
 
     (async () => {
       try {
-        const text = await generateLetter(nickname || '여행자', residentKey, secondResidentKey ?? residentKey);
+        const text = await generateLetter(nickname || '여행자', effectiveKey, secondKey);
         if (!cancelled) setLetterText(text);
       } catch {
         if (!cancelled) setLetterError(true);
@@ -60,52 +62,55 @@ export function PremiumResultPage() {
     return () => {
       cancelled = true;
     };
-  }, [RESULT, residentKey, secondResidentKey, nickname]);
+  }, [RESULT, effectiveKey, secondKey, nickname]);
 
   useEffect(() => {
     if (!user) return;
     let cancelled = false;
     (async () => {
-      const results = await fetchUserResults(user.id);
-      if (cancelled || results.length === 0) return;
-      const latest = results[0];
-      setResultId(latest.id);
+      const targetId = selectedResultId;
+      if (!targetId) {
+        const results = await fetchUserResults(user.id);
+        if (cancelled || results.length === 0) return;
+        const latest = results[0];
+        setResultId(latest.id);
+        console.log('[Archive] 선택된 result_id 없음, 최신 결과 사용:', latest.id);
+        return;
+      }
+      setResultId(targetId);
 
-      console.log('[Questions] 현재 user_id:', user.id);
-      console.log('[Questions] 현재 result_id:', latest.id);
+      console.log('[Archive] 현재 user_id:', user.id);
+      console.log('[Archive] 클릭한 result_id:', targetId);
 
-      // 1) result_id로 정확히 매칭
-      let qRow = await fetchQuestions(user.id, latest.id);
+      let qRow = await fetchQuestions(user.id, targetId);
 
-      // 2) 매칭 실패 시 user_id만으로 최근 행 조회
       if (!qRow) {
-        console.log('[Questions] result_id 매칭 실패, user_id만으로 조회');
+        console.log('[Archive] result_id 매칭 실패, user_id만으로 조회');
         qRow = await fetchLatestQuestionsByUser(user.id);
       }
 
-      // 3) 여전히 없으면 탐험권 구매자용 기본 1회 자동 생성
       if (!qRow) {
-        console.log('[Questions] 데이터 없음, 기본 1회 자동 생성');
-        qRow = await createDefaultQuestions(user.id, latest.id, 1);
+        console.log('[Archive] 데이터 없음, 기본 1회 자동 생성');
+        qRow = await createDefaultQuestions(user.id, targetId, 1);
       }
 
-      console.log('[Questions] 테이블에서 불러온 횟수:', qRow?.remaining_count ?? 0);
+      console.log('[Archive] 테이블에서 불러온 횟수:', qRow?.remaining_count ?? 0);
       if (!cancelled) setQuestionRow(qRow);
     })();
     return () => {
       cancelled = true;
     };
-  }, [user]);
+  }, [user, selectedResultId]);
 
   const remainingCount = questionRow?.remaining_count ?? 0;
 
   const handleAsk = async () => {
-    if (!question.trim() || !questionRow || questionRow.remaining_count <= 0 || !residentKey) return;
+    if (!question.trim() || !questionRow || questionRow.remaining_count <= 0 || !effectiveKey) return;
     setIsAsking(true);
     setAskError(false);
     setLuAnswer('');
     try {
-      const text = await answerQuestion(nickname || '여행자', residentKey, secondResidentKey ?? residentKey, question.trim());
+      const text = await answerQuestion(nickname || '여행자', effectiveKey, secondKey, question.trim());
       setLuAnswer(text);
       const ok = await decrementQuestion(questionRow.id, questionRow.remaining_count);
       if (ok) {
@@ -143,8 +148,7 @@ export function PremiumResultPage() {
         </p>
       );
     }
-    const secondKey = secondResidentKey ?? residentKey!;
-    const firstFeature = RESIDENT_FEATURES[residentKey!];
+    const firstFeature = RESIDENT_FEATURES[effectiveKey!];
     const firstParticle = hasFinalConsonant(firstFeature) ? '과' : '와';
     const secondFeature = RESIDENT_FEATURES[secondKey];
     const secondParticle = hasFinalConsonant(secondFeature) ? '이' : '가';
@@ -212,9 +216,9 @@ export function PremiumResultPage() {
 
           {/* Resident card */}
           <div className="flex flex-col items-center mb-8 animate-fadeUp">
-            {RESIDENT_IMAGES[residentKey!] ? (
+            {RESIDENT_IMAGES[effectiveKey!] ? (
               <ResidentFlipCard
-                frontImage={RESIDENT_IMAGES[residentKey!]}
+                frontImage={RESIDENT_IMAGES[effectiveKey!]}
                 alt={RESULT.name}
               />
             ) : (

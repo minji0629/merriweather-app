@@ -39,6 +39,10 @@ export interface AppState {
   setResidentKey: (key: ResidentKey | null) => void;
   secondResidentKey: ResidentKey | null;
   setSecondResidentKey: (key: ResidentKey | null) => void;
+  selectedResultId: string | null;
+  setSelectedResultId: (id: string | null) => void;
+  selectedResidentKey: ResidentKey | null;
+  setSelectedResidentKey: (key: ResidentKey | null) => void;
   previewMode: boolean;
   restart: () => void;
 }

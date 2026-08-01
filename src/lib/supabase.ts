@@ -170,7 +170,7 @@ export async function markLatestResultPaid(userId: string): Promise<boolean> {
 export async function fetchUserResults(userId: string): Promise<ResultRow[]> {
   const { data, error } = await supabase
     .from('results')
-    .select('*')
+    .select('id, user_id, resident_key, is_paid, created_at')
     .eq('user_id', userId)
     .order('created_at', { ascending: false });
 
@@ -179,6 +179,21 @@ export async function fetchUserResults(userId: string): Promise<ResultRow[]> {
     return [];
   }
   return (data as ResultRow[]) ?? [];
+}
+
+/** 특정 result_id로 단일 결과 행을 불러온다 (보관함에서 선택한 결과용) */
+export async function fetchResultById(resultId: string): Promise<ResultRow | null> {
+  const { data, error } = await supabase
+    .from('results')
+    .select('id, user_id, resident_key, is_paid, created_at')
+    .eq('id', resultId)
+    .maybeSingle();
+
+  if (error) {
+    console.error('[Supabase] fetchResultById error:', error.message);
+    return null;
+  }
+  return data as ResultRow | null;
 }
 
 /**

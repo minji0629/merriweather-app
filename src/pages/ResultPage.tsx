@@ -9,12 +9,13 @@ import ResidentFlipCard from '@/components/ResidentFlipCard';
 import { GiftCodeModal } from '@/components/GiftCodeModal';
 
 export function ResultPage() {
-  const { nickname, setCurrentPage, residentKey, previewMode, restart, previousPage } = useApp();
+  const { nickname, setCurrentPage, residentKey, selectedResidentKey, previewMode, restart, previousPage } = useApp();
   const { user, login } = useAuth();
   const { currentPage } = useApp();
   const [showSavePrompt, setShowSavePrompt] = useState(false);
   const [showGiftCode, setShowGiftCode] = useState(false);
-  const RESULT = residentKey ? getResidentProfile(residentKey) : null;
+  const effectiveKey = selectedResidentKey ?? residentKey;
+  const RESULT = effectiveKey ? getResidentProfile(effectiveKey) : null;
 
   if (!RESULT) {
     return (
@@ -50,9 +51,9 @@ export function ResultPage() {
 
           {/* Resident card */}
           <div className="flex flex-col items-center mb-8 animate-fadeUp">
-            {RESIDENT_IMAGES[residentKey!] ? (
+            {RESIDENT_IMAGES[effectiveKey!] ? (
               <ResidentFlipCard
-                frontImage={RESIDENT_IMAGES[residentKey!]}
+                frontImage={RESIDENT_IMAGES[effectiveKey!]}
                 alt={RESULT.name}
               />
             ) : (

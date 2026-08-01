@@ -46,6 +46,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [answers, setAnswers] = useState<Answer[]>(persisted.answers);
   const [residentKey, setResidentKey] = useState<ResidentKey | null>(persisted.residentKey);
   const [secondResidentKey, setSecondResidentKey] = useState<ResidentKey | null>(persisted.secondResidentKey);
+  const [selectedResultId, setSelectedResultId] = useState<string | null>(null);
+  const [selectedResidentKey, setSelectedResidentKey] = useState<ResidentKey | null>(null);
 
   const setCurrentPage = useCallback((page: Page) => {
     setCurrentPageState((prev) => {
@@ -102,6 +104,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setResidentKey,
     secondResidentKey,
     setSecondResidentKey,
+    selectedResultId,
+    setSelectedResultId,
+    selectedResidentKey,
+    setSelectedResidentKey,
     previewMode,
     restart,
   };

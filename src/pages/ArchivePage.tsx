@@ -3,7 +3,7 @@ import { useApp } from '@/store/useApp';
 import { useAuth } from '@/store/useAuth';
 import { PageContainer } from '@/components/PageContainer';
 import { Sparkles, Compass, Lock, X } from '@/components/Icons';
-import { supabase, fetchUserResults, deleteResult, ResultRow } from '@/lib/supabase';
+import { supabase, fetchUserResults, fetchResultById, deleteResult, ResultRow } from '@/lib/supabase';
 import { RESIDENTS } from '@/constants/residents';
 import { RESIDENT_IMAGES } from '@/constants/images';
 import type { ResidentKey } from '@/constants/questions';
@@ -17,7 +17,7 @@ function formatDate(iso: string): string {
 }
 
 export function ArchivePage() {
-  const { setCurrentPage } = useApp();
+  const { setCurrentPage, setSelectedResultId, setSelectedResidentKey } = useApp();
   const { user, login } = useAuth();
   const [results, setResults] = useState<ResultRow[] | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -41,6 +41,20 @@ export function ArchivePage() {
     })();
     return () => { mounted = false; };
   }, [user]);
+
+  const handleView = async (row: ResultRow, target: 'result' | 'premium' | 'payment') => {
+    console.log('[Archive] 클릭한 result_id:', row.id);
+    setSelectedResultId(row.id);
+
+    const fetched = await fetchResultById(row.id);
+    console.log('[Archive] Supabase에서 불러온 데이터:', fetched);
+
+    const key = (fetched?.resident_key ?? row.resident_key) as ResidentKey | null;
+    setSelectedResidentKey(key);
+    console.log('[Archive] 실제 표시되는 주민 키:', key);
+
+    setCurrentPage(target);
+  };
 
   const handleDeleteConfirm = async () => {
     if (!deletingId || !user) return;
@@ -187,7 +201,7 @@ export function ArchivePage() {
 
                     <div className="flex gap-2">
                       <button
-                        onClick={() => setCurrentPage('result')}
+                        onClick={() => handleView(row, 'result')}
                         className="flex-1 py-3 bg-white border border-[#E0DDD8] rounded-xl font-sans text-sm text-text
                                    hover:border-point hover:text-point transition-all duration-300 active:scale-95"
                       >
@@ -195,7 +209,7 @@ export function ArchivePage() {
                       </button>
                       {row.is_paid ? (
                         <button
-                          onClick={() => setCurrentPage('premium')}
+                          onClick={() => handleView(row, 'premium')}
                           className="flex-1 py-3 bg-point text-white rounded-xl font-sans font-bold text-sm
                                      shadow-sm transition-all duration-300 hover:bg-point-dark hover:shadow-md active:scale-95
                                      flex items-center justify-center gap-1.5"
@@ -205,7 +219,7 @@ export function ArchivePage() {
                         </button>
                       ) : (
                         <button
-                          onClick={() => setCurrentPage('payment')}
+                          onClick={() => handleView(row, 'payment')}
                           className="flex-1 py-3 bg-point/10 text-point-dark rounded-xl font-sans font-bold text-sm
                                      border border-point/30 transition-all duration-300 hover:bg-point/20 active:scale-95
                                      flex items-center justify-center gap-1.5"
