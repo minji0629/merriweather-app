@@ -186,7 +186,7 @@ export function PremiumResultPage() {
   return (
     <PageContainer className="bg-base">
       <div className="overflow-y-auto scrollbar-hide flex-1 min-h-0">
-        <div className="px-6 pt-10 pb-8">
+        <div className="px-4 sm:px-6 pt-10 pb-8">
           {/* Top bar */}
           <div className="flex items-center justify-between mb-4 pr-14 sm:pr-0">
             {previousPage === 'archive' ? (
@@ -264,14 +264,14 @@ export function PremiumResultPage() {
                         남은 횟수 {remainingCount}회
                       </span>
                     </div>
-                    <div className="p-5 bg-white rounded-xl border border-[#E0DDD8]">
-                      <div className="flex gap-2 mb-4">
+                    <div className="p-5 bg-white rounded-xl border border-[#E0DDD8] overflow-hidden">
+                      <div className="flex flex-col gap-3 mb-4">
                         <input
                           type="text"
                           value={question}
                           onChange={(e) => setQuestion(e.target.value)}
                           placeholder="루에게 물어보고 싶은 것을 적어줘"
-                          className="flex-1 px-4 py-3 text-sm font-sans text-text bg-base rounded-xl border border-[#E0DDD8] focus:border-point focus:outline-none transition-colors"
+                          className="w-full box-border px-4 py-3 text-sm font-sans text-text bg-base rounded-xl border border-[#E0DDD8] focus:border-point focus:outline-none transition-colors"
                           onKeyDown={(e) => {
                             if (e.key === 'Enter') handleAsk();
                           }}
@@ -279,10 +279,10 @@ export function PremiumResultPage() {
                         <button
                           onClick={handleAsk}
                           disabled={isAsking || !question.trim() || remainingCount <= 0}
-                          className="px-4 py-3 bg-point text-white rounded-xl font-sans text-sm
+                          className="w-full box-border px-4 py-3 bg-point text-white rounded-xl font-sans text-sm
                                      transition-all duration-300 hover:bg-point-dark active:scale-95
                                      disabled:opacity-40 disabled:cursor-not-allowed
-                                     flex items-center gap-1.5"
+                                     flex items-center justify-center gap-1.5"
                         >
                           <Send className="w-4 h-4" />
                           보내기
