@@ -56,7 +56,9 @@ export function LuPage() {
           {/* Lu character placeholder */}
           <div className="flex justify-center animate-fadeIn">
             {LU_CHARACTER ? (
-              <img src={LU_CHARACTER} alt="루" className="object-contain max-h-[55vh]" style={{ height: '55vh', width: 'auto', transform: 'scaleX(-1)' }} />
+              <div style={{ transform: 'scaleX(-1)' }}>
+                <img src={LU_CHARACTER} alt="루" className="object-contain max-h-[55vh] animate-breathe" style={{ height: '55vh', width: 'auto' }} />
+              </div>
             ) : (
               <div className="w-44 h-44 rounded-full bg-gradient-to-b from-point-light/40 to-point/30 flex items-center justify-center animate-float shadow-lg">
                 <div className="w-32 h-32 rounded-full bg-gradient-to-b from-[#B8E0D0] to-[#8ACBB8] flex items-center justify-center text-5xl font-batang text-point-dark shadow-inner">

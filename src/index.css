@@ -55,8 +55,14 @@
   from { transform: translateX(100%); }
   to { transform: translateX(0); }
 }
+@keyframes breathe {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+  100% { transform: scale(1); }
+}
 
 .animate-scaleIn { animation: scaleIn 0.3s ease-out; }
 .animate-fadeIn { animation: fadeIn 0.6s ease-out forwards; }
 .animate-fadeUp { animation: fadeUp 0.6s ease-out forwards; }
 .animate-slideIn { animation: slideIn 0.3s ease-out; }
+.animate-breathe { animation: breathe 3s ease-in-out infinite; }
