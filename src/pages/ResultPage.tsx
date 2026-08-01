@@ -46,21 +46,21 @@ export function ResultPage() {
           </div>
 
           {/* Resident card */}
-          <div className="flex flex-col items-center mb-8 animate-fadeUp">
-            <div className="w-56 h-72 rounded-2xl bg-gradient-to-b from-letter to-[#EDE5D0] shadow-lg border border-[#E0DDD8] flex flex-col items-center justify-center p-6 relative overflow-hidden">
+          <div className="flex flex-col items-center mb-8 animate-fadeUp -mx-6">
+            <div className="w-full rounded-none bg-gradient-to-b from-letter to-[#EDE5D0] shadow-lg border-y border-[#E0DDD8] relative overflow-hidden">
               {RESIDENT_IMAGES[residentKey!] ? (
-                <img src={RESIDENT_IMAGES[residentKey!]} alt={RESULT.name} className="w-full h-full object-cover" />
+                <img src={RESIDENT_IMAGES[residentKey!]} alt={RESULT.name} className="w-full h-auto object-cover" />
               ) : (
                 <>
                   <div className="absolute top-3 right-3 px-2 py-0.5 bg-golden/80 rounded-full text-[10px] font-sans text-text">
                     MERRIWEATHER
                   </div>
-                  <div className="w-24 h-24 rounded-full bg-gradient-to-b from-point-light/50 to-point/40 flex items-center justify-center mb-4 shadow-inner">
+                  <div className="w-24 h-24 rounded-full bg-gradient-to-b from-point-light/50 to-point/40 flex items-center justify-center mb-4 shadow-inner mx-auto mt-6">
                     <span className="text-4xl">{RESULT.emoji}</span>
                   </div>
-                  <p className="text-xs font-sans text-text-sub mb-1">주민등록증</p>
-                  <p className="font-batang text-lg text-text">{RESULT.name}</p>
-                  <p className="text-[10px] font-sans text-text-sub mt-1">No. {nickname || 'GUEST'}-001</p>
+                  <p className="text-xs font-sans text-text-sub mb-1 text-center">주민등록증</p>
+                  <p className="font-batang text-lg text-text text-center">{RESULT.name}</p>
+                  <p className="text-[10px] font-sans text-text-sub mt-1 text-center pb-6">No. {nickname || 'GUEST'}-001</p>
                 </>
               )}
             </div>
