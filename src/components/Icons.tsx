@@ -50,6 +50,9 @@ export function Send({ className, style }: IconProps) {
 export function Lock({ className, style }: IconProps) {
   return <span className={className} style={{ ...base(className), ...style }}>🔒</span>;
 }
+export function Ticket({ className, style }: IconProps) {
+  return <span className={className} style={{ ...base(className), ...style }}>🎟</span>;
+}
 export function Compass({ className, style }: IconProps) {
   return <span className={className} style={{ ...base(className), ...style }}>🧭</span>;
 }

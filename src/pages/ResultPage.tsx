@@ -4,14 +4,16 @@ import { useAuth } from '@/store/useAuth';
 import { PageContainer } from '@/components/PageContainer';
 import { RESIDENT_IMAGES, AD_AREA } from '@/constants/images';
 import { getResidentProfile, withNickname } from '@/constants/residents';
-import { Lock, Share2, Sparkles, Check, Gift } from '@/components/Icons';
+import { Lock, Share2, Sparkles, Check, Gift, Ticket } from '@/components/Icons';
 import ResidentFlipCard from '@/components/ResidentFlipCard';
+import { GiftCodeModal } from '@/components/GiftCodeModal';
 
 export function ResultPage() {
   const { nickname, setCurrentPage, residentKey, previewMode, restart, previousPage } = useApp();
   const { user, login } = useAuth();
   const { currentPage } = useApp();
   const [showSavePrompt, setShowSavePrompt] = useState(false);
+  const [showGiftCode, setShowGiftCode] = useState(false);
   const RESULT = residentKey ? getResidentProfile(residentKey) : null;
 
   if (!RESULT) {
@@ -265,7 +267,7 @@ export function ResultPage() {
         )}
 
         {/* Gift button */}
-        <div className="px-6 pb-4">
+        <div className="px-6 pb-4 space-y-3">
           <button
             onClick={() => setCurrentPage('gift')}
             className="w-full py-3.5 bg-white text-point-dark rounded-2xl font-sans font-medium text-sm
@@ -275,7 +277,18 @@ export function ResultPage() {
             <Gift className="w-4 h-4" />
             소중한 사람에게 선물하기
           </button>
+          <button
+            onClick={() => setShowGiftCode(true)}
+            className="w-full py-3.5 bg-point/10 text-point-dark rounded-2xl font-sans font-medium text-sm
+                       border border-point/30 transition-all duration-300 hover:bg-point/15 hover:shadow-md active:scale-95
+                       flex items-center justify-center gap-2"
+          >
+            <Ticket className="w-4 h-4" />
+            선물 코드 입력하기
+          </button>
         </div>
+
+        {showGiftCode && <GiftCodeModal onClose={() => setShowGiftCode(false)} />}
 
         {/* Restart link */}
         <div className="px-6 pb-8 text-center">

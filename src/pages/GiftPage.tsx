@@ -196,6 +196,37 @@ export function GiftPage() {
               </button>
             </div>
           </div>
+
+          {/* 선물 이용 안내 */}
+          <div className="mt-8 p-5 bg-white/40 rounded-2xl border border-white/40">
+            <h3 className="font-sans text-sm font-medium text-text mb-3">선물 이용 안내</h3>
+            <ul className="space-y-2">
+              <li className="flex gap-2 font-sans text-xs text-text-sub leading-relaxed">
+                <span className="text-point-dark flex-shrink-0">✦</span>
+                선물 결제 완료 후 카카오톡으로 링크와 코드가 전송됩니다.
+              </li>
+              <li className="flex gap-2 font-sans text-xs text-text-sub leading-relaxed">
+                <span className="text-point-dark flex-shrink-0">✦</span>
+                링크는 1회만 사용 가능합니다.
+              </li>
+              <li className="flex gap-2 font-sans text-xs text-text-sub leading-relaxed">
+                <span className="text-point-dark flex-shrink-0">✦</span>
+                선물 코드는 6개월간 유효합니다.
+              </li>
+              <li className="flex gap-2 font-sans text-xs text-text-sub leading-relaxed">
+                <span className="text-point-dark flex-shrink-0">✦</span>
+                코드는 결과 페이지 하단 [선물 코드 입력하기]에서 사용할 수 있습니다.
+              </li>
+              <li className="flex gap-2 font-sans text-xs text-text-sub leading-relaxed">
+                <span className="text-point-dark flex-shrink-0">✦</span>
+                링크 만료 후에도 코드로 이용 가능합니다.
+              </li>
+              <li className="flex gap-2 font-sans text-xs text-text-sub leading-relaxed">
+                <span className="text-point-dark flex-shrink-0">✦</span>
+                환불은 콘텐츠 열람 전에만 가능합니다.
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </PageContainer>
