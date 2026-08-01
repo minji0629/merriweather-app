@@ -10,16 +10,15 @@ import {
   fetchUserResults,
   fetchResultById,
   fetchQuestions,
-  fetchLatestQuestionsByUser,
-  createDefaultQuestions,
   decrementQuestion,
   saveAiText,
   appendQuestionHistory,
   QuestionRow,
   QuestionHistoryEntry,
 } from '@/lib/supabase';
-import { Sparkles, Send, Share2, Gift } from '@/components/Icons';
+import { Sparkles, Send, Share2, Gift, Plus } from '@/components/Icons';
 import ResidentFlipCard from '@/components/ResidentFlipCard';
+import { ExtraQuestionsModal } from '@/components/ExtraQuestionsModal';
 
 export function PremiumResultPage() {
   const { nickname, setCurrentPage, residentKey, secondResidentKey, selectedResidentKey, selectedResultId, restart, previousPage } = useApp();
@@ -38,12 +37,12 @@ export function PremiumResultPage() {
   const [letterError, setLetterError] = useState(false);
 
   const [question, setQuestion] = useState('');
-  const [luAnswer, setLuAnswer] = useState('');
   const [isAsking, setIsAsking] = useState(false);
   const [askError, setAskError] = useState(false);
   const [questionRow, setQuestionRow] = useState<QuestionRow | null>(null);
   const [resultId, setResultId] = useState<string | null>(null);
   const [history, setHistory] = useState<QuestionHistoryEntry[]>([]);
+  const [showExtraModal, setShowExtraModal] = useState(false);
 
   // AI 텍스트(결/편지) 로드 — 저장된 값이 있으면 그대로 사용, 없으면 생성 후 저장
   useEffect(() => {
@@ -122,7 +121,7 @@ export function PremiumResultPage() {
     };
   }, [RESULT, effectiveKey, secondKey, nickname, selectedResultId]);
 
-  // 질문 로드 — 저장된 question_history 표시
+  // 질문 로드 — result_id 기준으로 questions 테이블에서 question_history 불러오기
   useEffect(() => {
     if (!user) return;
     let cancelled = false;
@@ -133,28 +132,19 @@ export function PremiumResultPage() {
         if (cancelled || results.length === 0) return;
         const latest = results[0];
         setResultId(latest.id);
-        console.log('[Archive] 선택된 result_id 없음, 최신 결과 사용:', latest.id);
+        console.log('[Payment] 선택된 result_id 없음, 최신 결과 사용:', latest.id);
         return;
       }
       setResultId(targetId);
 
-      console.log('[Archive] 현재 user_id:', user.id);
-      console.log('[Archive] 클릭한 result_id:', targetId);
+      console.log('[Payment] 현재 user_id:', user.id);
+      console.log('[Payment] 클릭한 result_id:', targetId);
 
-      let qRow = await fetchQuestions(user.id, targetId);
+      // result_id 기준으로 정확히 조회 (fallback 없음 — remaining_count 초기화 방지)
+      const qRow = await fetchQuestions(user.id, targetId);
 
-      if (!qRow) {
-        console.log('[Archive] result_id 매칭 실패, user_id만으로 조회');
-        qRow = await fetchLatestQuestionsByUser(user.id);
-      }
-
-      if (!qRow) {
-        console.log('[Archive] 데이터 없음, 기본 1회 자동 생성');
-        qRow = await createDefaultQuestions(user.id, targetId, 1);
-      }
-
-      console.log('[Archive] 테이블에서 불러온 횟수:', qRow?.remaining_count ?? 0);
-      console.log('[Archive] 저장된 질문 내역:', qRow?.question_history ?? []);
+      console.log('[Payment] 테이블에서 불러온 횟수:', qRow?.remaining_count ?? 0);
+      console.log('[Payment] 저장된 질문 내역:', qRow?.question_history ?? []);
       if (!cancelled) {
         setQuestionRow(qRow);
         setHistory(qRow?.question_history ?? []);
@@ -171,10 +161,10 @@ export function PremiumResultPage() {
     if (!question.trim() || !questionRow || questionRow.remaining_count <= 0 || !effectiveKey) return;
     setIsAsking(true);
     setAskError(false);
-    setLuAnswer('');
     try {
-      const text = await answerQuestion(nickname || '여행자', effectiveKey, secondKey, question.trim());
-      setLuAnswer(text);
+      // 이전 대화 내역을 context로 전달
+      const historyContext = history.map((h) => ({ question: h.question, answer: h.answer }));
+      const text = await answerQuestion(nickname || '여행자', effectiveKey, secondKey, question.trim(), historyContext);
 
       const entry: QuestionHistoryEntry = {
         question: question.trim(),
@@ -190,6 +180,7 @@ export function PremiumResultPage() {
       if (ok) {
         setQuestionRow({ ...questionRow, remaining_count: questionRow.remaining_count - 1 });
       }
+      setQuestion('');
     } catch {
       setAskError(true);
     } finally {
@@ -343,33 +334,38 @@ export function PremiumResultPage() {
                       </span>
                     </div>
                     <div className="p-5 bg-white rounded-xl border border-[#E0DDD8] overflow-hidden">
-                      <div className="flex flex-col gap-3 mb-4">
-                        <input
-                          type="text"
-                          value={question}
-                          onChange={(e) => setQuestion(e.target.value)}
-                          placeholder="루에게 물어보고 싶은 것을 적어줘"
-                          className="w-full box-border px-4 py-3 text-sm font-sans text-text bg-base rounded-xl border border-[#E0DDD8] focus:border-point focus:outline-none transition-colors"
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') handleAsk();
-                          }}
-                        />
-                        <button
-                          onClick={handleAsk}
-                          disabled={isAsking || !question.trim() || remainingCount <= 0}
-                          className="w-full box-border px-4 py-3 bg-point text-white rounded-xl font-sans text-sm
-                                     transition-all duration-300 hover:bg-point-dark active:scale-95
-                                     disabled:opacity-40 disabled:cursor-not-allowed
-                                     flex items-center justify-center gap-1.5"
-                        >
-                          <Send className="w-4 h-4" />
-                          보내기
-                        </button>
-                      </div>
+                      {/* 대화 내역 (위에서 아래로 쌓임) */}
+                      {history.length > 0 && (
+                        <div className="mb-4 space-y-4 max-h-80 overflow-y-auto scrollbar-hide">
+                          {history.map((h, i) => (
+                            <div key={i} className="space-y-2">
+                              <div className="flex justify-end">
+                                <div className="max-w-[80%] px-4 py-2.5 bg-point/10 rounded-2xl rounded-tr-md">
+                                  <p className="font-sans text-sm text-text leading-relaxed">{h.question}</p>
+                                </div>
+                              </div>
+                              <div className="flex justify-start">
+                                <div className="max-w-[80%] px-4 py-2.5 bg-base rounded-2xl rounded-tl-md border border-[#E0DDD8]">
+                                  <p className="font-batang text-sm text-text leading-relaxed whitespace-pre-line">{h.answer}</p>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                          {isAsking && (
+                            <div className="flex justify-start">
+                              <div className="px-4 py-2.5 bg-base rounded-2xl rounded-tl-md border border-[#E0DDD8]">
+                                <p className="font-batang text-sm text-text-sub">루가 생각하는 중이에요...</p>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
 
-                      {isAsking && (
-                        <div className="flex items-center justify-center py-4">
-                          <p className="font-batang text-sm text-text-sub">루가 생각하는 중이에요...</p>
+                      {isAsking && history.length === 0 && (
+                        <div className="flex justify-start mb-4">
+                          <div className="px-4 py-2.5 bg-base rounded-2xl rounded-tl-md border border-[#E0DDD8]">
+                            <p className="font-batang text-sm text-text-sub">루가 생각하는 중이에요...</p>
+                          </div>
                         </div>
                       )}
 
@@ -379,29 +375,48 @@ export function PremiumResultPage() {
                         </p>
                       )}
 
-                      {luAnswer && !isAsking && (
-                        <div className="mt-2 p-4 bg-base rounded-xl border border-[#E0DDD8]">
-                          <p className="font-batang text-sm text-text leading-relaxed pt-1 whitespace-pre-line">{luAnswer}</p>
-                        </div>
-                      )}
-
-                      {/* 저장된 질문/답변 내역 */}
-                      {history.length > 0 && (
-                        <div className="mt-4 space-y-3">
-                          <p className="text-xs font-sans text-text-sub mb-1">이전 질문 내역</p>
-                          {history.map((h, i) => (
-                            <div key={i} className="p-4 bg-base rounded-xl border border-[#E0DDD8]">
-                              <p className="font-sans text-xs text-text-sub mb-1">Q. {h.question}</p>
-                              <p className="font-batang text-sm text-text leading-relaxed pt-1 whitespace-pre-line">A. {h.answer}</p>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-
-                      {remainingCount <= 0 && !luAnswer && !isAsking && history.length === 0 && (
+                      {/* 남은 횟수 0 + 내역 없음 안내 */}
+                      {remainingCount <= 0 && !isAsking && history.length === 0 && !askError && (
                         <p className="font-batang text-sm text-text-sub text-center py-4">
                           남은 질문 횟수가 없어요. 추가 질문권을 구매하면 더 물어볼 수 있어요.
                         </p>
+                      )}
+
+                      {/* 질문 입력창 */}
+                      {remainingCount > 0 ? (
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={question}
+                            onChange={(e) => setQuestion(e.target.value)}
+                            placeholder="루에게 물어보고 싶은 것을 적어줘"
+                            className="flex-1 box-border px-4 py-3 text-sm font-sans text-text bg-base rounded-xl border border-[#E0DDD8] focus:border-point focus:outline-none transition-colors"
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') handleAsk();
+                            }}
+                          />
+                          <button
+                            onClick={handleAsk}
+                            disabled={isAsking || !question.trim()}
+                            className="px-4 py-3 bg-point text-white rounded-xl font-sans text-sm
+                                       transition-all duration-300 hover:bg-point-dark active:scale-95
+                                       disabled:opacity-40 disabled:cursor-not-allowed
+                                       flex items-center justify-center gap-1.5"
+                          >
+                            <Send className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ) : (
+                        /* 남은 횟수 0 — 추가 질문 결제 버튼 */
+                        <button
+                          onClick={() => setShowExtraModal(true)}
+                          className="w-full py-3.5 bg-point/10 text-point-dark rounded-xl font-sans font-medium text-sm
+                                     border border-point/30 transition-all duration-300 hover:bg-point/15 active:scale-95
+                                     flex items-center justify-center gap-2"
+                        >
+                          <Plus className="w-4 h-4" />
+                          루에게 추가 질문 3회 1,990원
+                        </button>
                       )}
                     </div>
                   </>
@@ -448,6 +463,10 @@ export function PremiumResultPage() {
           </div>
         </div>
       </div>
+
+      {showExtraModal && (
+        <ExtraQuestionsModal open={showExtraModal} onClose={() => setShowExtraModal(false)} />
+      )}
     </PageContainer>
   );
 }

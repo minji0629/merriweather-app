@@ -139,27 +139,38 @@ export async function generateLetter(
   return callClaude(prompt);
 }
 
-/** 3. 루에게 질문하기 */
+/** 3. 루에게 질문하기 (대화 이어가기) */
 export async function answerQuestion(
   nickname: string,
   resident1: ResidentKey,
   resident2: ResidentKey,
   question: string,
+  history: { question: string; answer: string }[] = [],
 ): Promise<string> {
   const call = vocative(nickname);
   const desc = `${RESIDENT_LABELS[resident1]}과 ${RESIDENT_LABELS[resident2]}의 기질을 함께 가진 사람`;
+
+  const historyBlock =
+    history.length > 0
+      ? `\n지금까지 나눈 대화:\n${history
+          .map((h, i) => `대화 ${i + 1}\n나: ${h.question}\n루: ${h.answer}`)
+          .join('\n\n')}\n`
+      : '';
+
   const prompt = `너는 이 사람을 오래 지켜봐온 따뜻한 상담 선생님이야.
 반말이지만 조심스럽고 부드럽게 말해.
 단정짓지 말고 '~일 수도 있어', '~지 않았어?', '~했을 것 같아' 처럼
 여지를 두는 표현을 써.
 이 사람의 성향: ${desc}
 닉네임: ${nickname}
-질문: ${question}
+${historyBlock}
+이번 질문: ${question}
 답변 형식
 - 200자 내외
 - 따뜻하고 공감하는 문체 (반말, 조심스럽고 부드럽게)
 - 단정짓지 말고 여지를 두는 표현 사용
 - "${call}" 로 호칭
+- 이전 대화 내용을 반영해서 자연스럽게 이어지는 답변
 - 메리웨더, 기억의 숲, 주민 같은 서비스 용어 절대 쓰지 마
 - 줄바꿈 자연스럽게`;
   return callClaude(prompt);

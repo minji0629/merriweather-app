@@ -56,3 +56,6 @@ export function Ticket({ className, style }: IconProps) {
 export function Compass({ className, style }: IconProps) {
   return <span className={className} style={{ ...base(className), ...style }}>🧭</span>;
 }
+export function Plus({ className, style }: IconProps) {
+  return <span className={className} style={{ ...base(className), ...style }}>+</span>;
+}
