@@ -38,7 +38,7 @@ export function LuPage() {
   const isLast = lineIndex === DIALOGUES.length - 1;
 
   return (
-    <PageContainer className="bg-gradient-to-b from-[#F0FAF0] to-[#D4F0D0]" footer={false}>
+    <PageContainer className="bg-gradient-to-b from-[#F0FAF0] to-[#D4F0D0]" footer={false} style={{ height: '100vh', overflow: 'hidden' }}>
       {/* Skip button - top right */}
       <button
         onClick={handleSkip}
@@ -50,13 +50,13 @@ export function LuPage() {
       </button>
 
       {/* Content area */}
-      <div className="relative flex flex-col flex-1 min-h-0 px-6 pt-20 pb-8">
+      <div className="relative flex flex-col flex-1 min-h-0 px-6 pt-14 pb-4">
         {/* Dialogue area */}
-        <div className="flex-1 flex flex-col items-center justify-center gap-6">
+        <div className="flex-1 flex flex-col items-center justify-center gap-3">
           {/* Lu character placeholder */}
-          <div className="flex justify-center mb-4 animate-fadeIn">
+          <div className="flex justify-center animate-fadeIn">
             {LU_CHARACTER ? (
-              <img src={LU_CHARACTER} alt="루" className="object-contain" style={{ height: '62vh', width: 'auto', transform: 'scaleX(-1)' }} />
+              <img src={LU_CHARACTER} alt="루" className="object-contain max-h-[55vh]" style={{ height: '55vh', width: 'auto', transform: 'scaleX(-1)' }} />
             ) : (
               <div className="w-44 h-44 rounded-full bg-gradient-to-b from-point-light/40 to-point/30 flex items-center justify-center animate-float shadow-lg">
                 <div className="w-32 h-32 rounded-full bg-gradient-to-b from-[#B8E0D0] to-[#8ACBB8] flex items-center justify-center text-5xl font-batang text-point-dark shadow-inner">
@@ -69,9 +69,9 @@ export function LuPage() {
           {/* Dialogue text */}
           <div
             key={lineIndex}
-            className="w-full min-h-[120px] flex items-center justify-center text-center animate-fadeIn"
+            className="w-full min-h-[80px] flex items-center justify-center text-center animate-fadeIn"
           >
-            <p className="font-batang text-xl text-text leading-relaxed max-w-xs">
+            <p className="font-batang text-lg text-text leading-relaxed max-w-xs">
               <TypewriterText
                 text={DIALOGUES[lineIndex]}
                 speed={60}
@@ -82,7 +82,7 @@ export function LuPage() {
         </div>
 
         {/* Action button */}
-        <div className="h-24 flex items-end justify-center">
+        <div className="h-16 flex items-end justify-center">
           {!isTyping && (
             <button
               onClick={handleNext}
