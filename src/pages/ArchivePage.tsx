@@ -161,7 +161,7 @@ export function ArchivePage() {
                     <div className="flex items-start gap-4 mb-4">
                       <div className="w-14 h-14 rounded-2xl bg-gradient-to-b from-point-light/40 to-point/20 flex items-center justify-center flex-shrink-0 overflow-hidden">
                         {RESIDENT_IMAGES[row.resident_key] ? (
-                          <img src={RESIDENT_IMAGES[row.resident_key]} alt={profile.name} className="w-full h-full object-contain" />
+                          <img src={RESIDENT_IMAGES[row.resident_key]} alt={profile.name} className="w-full h-full object-cover" />
                         ) : (
                           <span className="text-2xl">{profile.emoji}</span>
                         )}

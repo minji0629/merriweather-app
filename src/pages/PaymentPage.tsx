@@ -53,7 +53,7 @@ export function PaymentPage() {
           <div className="flex flex-col items-center mb-8 animate-fadeUp">
             <div className="w-32 h-40 rounded-2xl bg-gradient-to-b from-letter to-[#EDE5D0] shadow-md border border-[#E0DDD8] flex flex-col items-center justify-center p-4 relative overflow-hidden">
               {residentKey && RESIDENT_IMAGES[residentKey] ? (
-                <img src={RESIDENT_IMAGES[residentKey]} alt={PREVIEW?.name ?? '주민 카드'} className="w-full h-full object-contain" />
+                <img src={RESIDENT_IMAGES[residentKey]} alt={PREVIEW?.name ?? '주민 카드'} className="w-full h-full object-cover" />
               ) : (
                 <>
                   <div className="w-14 h-14 rounded-full bg-gradient-to-b from-point-light/50 to-point/40 flex items-center justify-center mb-2 shadow-inner">

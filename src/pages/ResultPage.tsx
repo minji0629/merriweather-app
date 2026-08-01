@@ -49,7 +49,7 @@ export function ResultPage() {
           <div className="flex flex-col items-center mb-8 animate-fadeUp">
             <div className="w-56 h-72 rounded-2xl bg-gradient-to-b from-letter to-[#EDE5D0] shadow-lg border border-[#E0DDD8] flex flex-col items-center justify-center p-6 relative overflow-hidden">
               {RESIDENT_IMAGES[residentKey!] ? (
-                <img src={RESIDENT_IMAGES[residentKey!]} alt={RESULT.name} className="w-full h-full object-contain" />
+                <img src={RESIDENT_IMAGES[residentKey!]} alt={RESULT.name} className="w-full h-full object-cover" />
               ) : (
                 <>
                   <div className="absolute top-3 right-3 px-2 py-0.5 bg-golden/80 rounded-full text-[10px] font-sans text-text">
