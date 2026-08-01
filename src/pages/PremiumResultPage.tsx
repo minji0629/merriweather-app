@@ -210,10 +210,21 @@ export function PremiumResultPage() {
           </div>
 
           {/* Resident card */}
-          <div className="flex flex-col items-center mb-8 animate-fadeUp -mx-6">
-            <div className="w-full rounded-none bg-gradient-to-b from-letter to-[#EDE5D0] shadow-lg border-y border-[#E0DDD8] relative overflow-hidden">
+          <div className="flex flex-col items-center mb-8 animate-fadeUp">
+            <div
+              className="relative overflow-hidden"
+              style={{
+                width: '280px',
+                height: '380px',
+                border: '2px solid #C9A84C',
+                borderRadius: '12px',
+                boxShadow: '0 0 0 6px #f5f0e0, 0 0 0 8px #C9A84C',
+                background: '#f5f0e0',
+                padding: '8px',
+              }}
+            >
               {RESIDENT_IMAGES[residentKey!] ? (
-                <img src={RESIDENT_IMAGES[residentKey!]} alt={RESULT.name} className="w-full h-auto object-cover" />
+                <img src={RESIDENT_IMAGES[residentKey!]} alt={RESULT.name} className="w-full h-full object-cover" style={{ borderRadius: '8px' }} />
               ) : (
                 <>
                   <div className="absolute top-3 right-3 px-2 py-0.5 bg-golden/80 rounded-full text-[10px] font-sans text-text">
@@ -224,7 +235,7 @@ export function PremiumResultPage() {
                   </div>
                   <p className="text-xs font-sans text-text-sub mb-1 text-center">주민등록증</p>
                   <p className="font-batang text-lg text-text text-center">{RESULT.name}</p>
-                  <p className="text-[10px] font-sans text-text-sub mt-1 text-center pb-6">No. {nickname || 'GUEST'}-001</p>
+                  <p className="text-[10px] font-sans text-text-sub mt-1 text-center">No. {nickname || 'GUEST'}-001</p>
                 </>
               )}
             </div>
