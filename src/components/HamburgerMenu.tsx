@@ -35,13 +35,12 @@ export function HamburgerMenu() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="fixed top-5 right-5 z-40 w-10 h-10 flex flex-col items-center justify-center gap-1.5
-                   bg-white/80 backdrop-blur-sm rounded-full shadow-md hover:shadow-lg transition-all"
+        className="fixed top-5 right-5 z-40 flex flex-col items-center justify-center gap-1.5"
         aria-label="메뉴"
       >
-        <span className="w-4 h-0.5 bg-text rounded-full" />
-        <span className="w-4 h-0.5 bg-text rounded-full" />
-        <span className="w-4 h-0.5 bg-text rounded-full" />
+        <span className="w-5 h-0.5 bg-white rounded-full drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]" />
+        <span className="w-5 h-0.5 bg-white rounded-full drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]" />
+        <span className="w-5 h-0.5 bg-white rounded-full drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]" />
       </button>
 
       {open && (

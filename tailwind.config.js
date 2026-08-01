@@ -18,6 +18,7 @@ export default {
       fontFamily: {
         batang: ['"Gowun Batang"', 'serif'],
         sans: ['"Pretendard"', 'sans-serif'],
+        playfair: ['"Playfair Display"', 'serif'],
       },
       maxWidth: {
         mobile: '430px',
