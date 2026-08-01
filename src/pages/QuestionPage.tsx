@@ -103,6 +103,9 @@ function ChapterTransition({ chapter, chapterName, onNext }: ChapterTransitionPr
         <h2 className="font-playfair text-3xl font-bold text-white tracking-[0.05em] mt-4 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] animate-fadeUp" style={{ animationDelay: '0.3s', opacity: 0 }}>
           {chapterName}
         </h2>
+        <p className="font-sans mt-3 drop-shadow-[0_1px_3px_rgba(0,0,0,0.5)] animate-fadeUp" style={{ animationDelay: '0.5s', opacity: 0, fontSize: '0.75rem', color: 'rgba(255,255,255,0.7)' }}>
+          잠시 후 자동으로 넘어갑니다.
+        </p>
         <div className="mt-6 flex justify-center">
           <div className="w-1 h-1 rounded-full bg-white/50 animate-pulse" />
         </div>
@@ -206,16 +209,19 @@ export function QuestionPage() {
     <PageContainer className="bg-black" footer={false}>
       {/* Question view */}
       <div
-        className="absolute inset-0 z-0 transition-opacity duration-500"
-        style={{ opacity: showQuestion ? 1 : 0 }}
+        className="absolute inset-0 z-0 overflow-hidden transition-opacity duration-500"
+        style={{ opacity: showQuestion ? 1 : 0, height: '100vh' }}
       >
         {/* Background — gradient */}
         <div className="absolute inset-0" style={{ background: questionBgGradient }} />
 
         {/* Content */}
-        <div className={`relative z-10 flex flex-col flex-1 min-h-0 max-w-[430px] mx-auto px-5 pt-4 pb-6 transition-opacity duration-300 ${phase === 'transition' ? 'opacity-0' : 'opacity-100'}`}>
+        <div className={`relative z-10 flex flex-col max-w-[430px] mx-auto transition-opacity duration-300 ${phase === 'transition' ? 'opacity-0' : 'opacity-100'}`} style={{ height: '100vh' }}>
           {/* Top half: chapter badge + progress + question (50%) */}
-          <div className="flex flex-col items-center justify-center min-h-0 py-3" style={{ height: '50%' }}>
+          <div
+            className="flex flex-col justify-center items-center"
+            style={{ height: '50%', padding: '1rem' }}
+          >
             {/* Top bar: chapter badge + progress */}
             <div className="flex items-center justify-between w-full flex-shrink-0 mb-4">
               <span className="px-3 py-1 bg-point text-white text-xs font-sans font-medium rounded-full shadow-md">
@@ -227,39 +233,40 @@ export function QuestionPage() {
             </div>
 
             {/* Question text */}
-            <div className="flex-1 flex items-center justify-center min-h-0">
-              <div key={qIndex} className="w-full text-center animate-fadeUp">
-                {question.question.startsWith('루의 말') ? (
-                  <div className="space-y-2.5">
-                    <p className="font-sans text-[11px] text-text/50 tracking-wide">
-                      {formatLuWords(question.question).label}
-                    </p>
-                    <div className="space-y-2.5">
-                      {formatLuWords(question.question).sentences.map((sentence, i) => (
-                        <p
-                          key={i}
-                          className="font-batang leading-[1.7] text-text/80 drop-shadow-sm"
-                          style={{ fontSize: 'clamp(0.9rem, 2.5vw, 1.2rem)' }}
-                        >
-                          {sentence}
-                        </p>
-                      ))}
-                    </div>
-                  </div>
-                ) : (
-                  <p
-                    className="font-batang leading-[1.7] text-text drop-shadow-sm"
-                    style={{ fontSize: 'clamp(0.9rem, 2.5vw, 1.2rem)' }}
-                  >
-                    {formatLineBreaks(question.question)}
+            <div key={qIndex} className="w-full text-center animate-fadeUp">
+              {question.question.startsWith('루의 말') ? (
+                <div className="space-y-2.5">
+                  <p className="font-sans text-[11px] text-text/50 tracking-wide">
+                    {formatLuWords(question.question).label}
                   </p>
-                )}
-              </div>
+                  <div className="space-y-2.5">
+                    {formatLuWords(question.question).sentences.map((sentence, i) => (
+                      <p
+                        key={i}
+                        className="font-batang leading-[1.7] text-text/80 drop-shadow-sm"
+                        style={{ fontSize: 'clamp(0.9rem, 2.5vw, 1.2rem)' }}
+                      >
+                        {sentence}
+                      </p>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <p
+                  className="font-batang leading-[1.7] text-text drop-shadow-sm"
+                  style={{ fontSize: 'clamp(0.9rem, 2.5vw, 1.2rem)' }}
+                >
+                  {formatLineBreaks(question.question)}
+                </p>
+              )}
             </div>
           </div>
 
           {/* Bottom half: choices (50%) */}
-          <div className="flex flex-col justify-center min-h-0 gap-2" style={{ height: '50%' }}>
+          <div
+            className="flex flex-col justify-evenly"
+            style={{ height: '50%', padding: '1rem' }}
+          >
             {question.choices.map((choice, i) => {
               const isSelected = selected === choice.text;
               return (
