@@ -1,19 +1,21 @@
 import { useEffect, useState } from 'react';
 import { useApp } from '@/store/useApp';
 import { useAuth } from '@/store/useAuth';
-import { supabase, savePurchase, markLatestResultPaid, upsertQuestions } from '@/lib/supabase';
+import { supabase, savePurchase, markResultPaid, upsertQuestions } from '@/lib/supabase';
 import {
   loadUserId,
   savePendingPurchase,
   loadPendingPurchase,
   clearPendingPurchase,
+  loadResultId,
+  clearResultId,
   PendingPurchase,
 } from '@/lib/authStorage';
 import { PageContainer } from '@/components/PageContainer';
 import { Check, Sparkles } from '@/components/Icons';
 
 export function PaymentSuccessPage() {
-  const { setCurrentPage, residentKey } = useApp();
+  const { setCurrentPage, residentKey, setSelectedResultId } = useApp();
   const { login } = useAuth();
   const [status, setStatus] = useState<'processing' | 'done' | 'needLogin'>('processing');
 
@@ -97,37 +99,47 @@ export function PaymentSuccessPage() {
         console.error('[Results] PaymentSuccess - savePurchase 예외:', err);
       }
 
-      let latestResultId: string | null = null;
-      try {
-        console.log('[Results] PaymentSuccess - markLatestResultPaid 호출:', { userId });
-        const ok = await markLatestResultPaid(userId);
-        console.log('[Results] PaymentSuccess - markLatestResultPaid 결과:', ok);
+      // localStorage에서 결제 전 저장한 result_id를 정확히 사용
+      const savedResultId = loadResultId();
+      console.log('[Payment] 결제 전 저장된 result_id:', savedResultId);
 
-        // 방금 paid로 표시된 결과 ID 조회
-        const { data: latestResult } = await supabase
-          .from('results')
-          .select('id')
-          .eq('user_id', userId)
-          .order('created_at', { ascending: false })
-          .limit(1)
-          .maybeSingle();
-        latestResultId = latestResult?.id ?? null;
-        console.log('[Results] PaymentSuccess - latestResultId:', latestResultId);
-        if (!latestResultId) {
-          console.error('[Results] PaymentSuccess - results 테이블에 행이 없습니다! saveFreeResult가 선행되지 않았을 수 있습니다.');
+      let targetResultId: string | null = savedResultId;
+
+      if (targetResultId) {
+        try {
+          console.log('[Payment] markResultPaid 호출, result_id:', targetResultId);
+          const ok = await markResultPaid(targetResultId);
+          console.log('[Payment] markResultPaid 결과:', ok);
+        } catch (err) {
+          console.error('[Payment] markResultPaid 예외:', err);
         }
-      } catch (err) {
-        console.error('[Results] PaymentSuccess - markLatestResultPaid 예외:', err);
+      } else {
+        console.error('[Payment] 저장된 result_id 없음 - 결제 전 saveFreeResult가 선행되지 않았을 수 있습니다.');
       }
 
+      // 표시할 주민 키 확인
+      const { data: resultRow } = await supabase
+        .from('results')
+        .select('id, resident_key')
+        .eq('id', targetResultId ?? '')
+        .maybeSingle();
+      console.log('[Payment] 결제 후 불러온 result_id:', resultRow?.id ?? null);
+      console.log('[Payment] 표시된 주민 키:', resultRow?.resident_key ?? null);
+
       // questions 테이블 생성/업데이트
-      if (latestResultId) {
+      if (targetResultId) {
         try {
-          const qRow = await upsertQuestions(userId, latestResultId, productType);
-          console.log('[Payment Success] upsertQuestions 결과:', qRow);
+          const qRow = await upsertQuestions(userId, targetResultId, productType);
+          console.log('[Payment] upsertQuestions 결과:', qRow);
         } catch (err) {
-          console.error('[Payment Success] upsertQuestions 예외:', err);
+          console.error('[Payment] upsertQuestions 예외:', err);
         }
+      }
+
+      // 유료 결과 페이지에서 정확한 result_id를 사용하도록 설정
+      if (targetResultId) {
+        setSelectedResultId(targetResultId);
+        console.log('[Payment] selectedResultId 설정:', targetResultId);
       }
 
       setStatus('done');

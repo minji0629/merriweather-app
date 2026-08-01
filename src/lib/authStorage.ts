@@ -3,6 +3,7 @@ const MARKETING_DETAIL_KEY = 'merriweather_marketing_detail';
 const RETURN_PAGE_KEY = 'merriweather_return_page';
 const USER_ID_KEY = 'merriweather_user_id';
 const PENDING_PURCHASE_KEY = 'merriweather_pending_purchase';
+const RESULT_ID_KEY = 'merriweather_result_id';
 
 export interface PendingPurchase {
   paymentKey: string;
@@ -73,4 +74,16 @@ export function loadPendingPurchase(): PendingPurchase | null {
 
 export function clearPendingPurchase() {
   localStorage.removeItem(PENDING_PURCHASE_KEY);
+}
+
+export function saveResultId(resultId: string) {
+  localStorage.setItem(RESULT_ID_KEY, resultId);
+}
+
+export function loadResultId(): string | null {
+  return localStorage.getItem(RESULT_ID_KEY);
+}
+
+export function clearResultId() {
+  localStorage.removeItem(RESULT_ID_KEY);
 }

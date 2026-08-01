@@ -5,6 +5,7 @@ import {
   clearReturnPage,
   loadPendingPurchase,
   clearPendingPurchase,
+  saveResultId,
 } from '@/lib/authStorage';
 import { useApp } from '@/store/useApp';
 import { useAuth } from '@/store/useAuth';
@@ -48,6 +49,10 @@ export function AuthCallbackPage() {
           console.log('[Results] AuthCallback - saveFreeResult 호출:', { userId: dbUser.id, residentKey, answersCount: answers.length });
           const result = await saveFreeResult(dbUser.id, residentKey, { answers });
           console.log('[Results] AuthCallback - saveFreeResult 결과:', result ? `성공 (id: ${result.id})` : '실패 (null)');
+          if (result) {
+            saveResultId(result.id);
+            console.log('[Payment] 결제 전 result_id 저장:', result.id);
+          }
         } else {
           console.log('[Results] AuthCallback - saveFreeResult 스킵:', { hasDbUser: !!dbUser, hasResidentKey: !!residentKey });
         }

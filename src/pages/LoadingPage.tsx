@@ -4,6 +4,7 @@ import { useAuth } from '@/store/useAuth';
 import { PageContainer } from '@/components/PageContainer';
 import { calculateResident, calculateResidentDebug, calculateTopTwoResidents, RESIDENTS } from '@/constants/residents';
 import { saveFreeResult } from '@/lib/supabase';
+import { saveResultId } from '@/lib/authStorage';
 
 const FIREFLIES = [
   { top: '30%', left: '35%', size: 'w-3 h-3', delay: '0s', duration: '2s' },
@@ -30,6 +31,8 @@ export function LoadingPage() {
         .then((result) => {
           if (result) {
             console.log('[Results] LoadingPage - saveFreeResult 성공:', result.id);
+            saveResultId(result.id);
+            console.log('[Payment] 결제 전 result_id 저장:', result.id);
           } else {
             console.error('[Results] LoadingPage - saveFreeResult 실패: null 반환');
           }
