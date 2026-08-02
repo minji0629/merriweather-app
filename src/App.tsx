@@ -17,7 +17,7 @@ import { AuthCallbackPage } from '@/pages/AuthCallbackPage';
 import { ArchivePage } from '@/pages/ArchivePage';
 import { NoticePage } from '@/pages/NoticePage';
 import { ContactPage } from '@/pages/ContactPage';
-import { TermsPage } from '@/pages/TermsPage';
+import { TermsPage }  from '@/pages/TermsPage';
 import { PrivacyPage } from '@/pages/PrivacyPage';
 import { HamburgerMenu } from '@/components/HamburgerMenu';
 import { LoginModal } from '@/components/LoginModal';
