@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function PrivacyPage() {
   return (
-    <div style={{ padding: '2rem 1.5rem', maxWidth: '600px', margin: '0 auto', fontFamily: 'Pretendard, sans-serif', fontSize: '0.9rem', lineHeight: '1.8', color: '#333' }}>
+    <div style={{ padding: '2rem 1.5rem', maxWidth: '600px', margin: '0 auto', fontFamily: 'Pretendard, sans-serif', fontSize: '0.9rem', lineHeight: '1.8', color: '#333', backgroundColor: '#ffffff', minHeight: '100vh'  }}>
       <h1 style={{ fontSize: '1.3rem', fontWeight: 'bold', marginBottom: '2rem' }}>개인정보처리방침</h1>
       <pre style={{ whiteSpace: 'pre-wrap', fontFamily: 'inherit' }}>
 {`메리웨더 개인정보처리방침
