@@ -5,7 +5,7 @@ export default function TermsPage() {
     <div style={{ padding: '2rem 1.5rem', maxWidth: '600px', margin: '0 auto', fontFamily: 'Pretendard, sans-serif', fontSize: '0.9rem', lineHeight: '1.8', color: '#333' }}>
       <h1 style={{ fontSize: '1.3rem', fontWeight: 'bold', marginBottom: '2rem' }}>이용약관</h1>
       <pre style={{ whiteSpace: 'pre-wrap', fontFamily: 'inherit' }}>
-{메리웨더 이용약관
+{`메리웨더 이용약관
 
 제1조 (목적)
 이 약관은 릴 스튜디오(이하 "회사")가 운영하는 메리웨더(Merriweather) 서비스(이하 "서비스")의 이용 조건 및 절차, 회사와 이용자 간의 권리·의무 및 책임 사항을 규정함을 목적으로 합니다.
@@ -90,7 +90,7 @@ export default function TermsPage() {
 대표자: 황민지
 사업자등록번호: 497-10-03495
 주소: 경상남도 창원시 마산회원구 회성동 6길 14
-이메일: merriweather.official@gmail.com}
+이메일: merriweather.official@gmail.com`}
       </pre>
     </div>
   );
