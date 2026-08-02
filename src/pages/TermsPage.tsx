@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function TermsPage() {
   return (
-    <div style={{ padding: '2rem 1.5rem', maxWidth: '600px', margin: '0 auto', fontFamily: 'Pretendard, sans-serif', fontSize: '0.9rem', lineHeight: '1.8', color: '#333' }}>
+    <div style={{ padding: '2rem 1.5rem', maxWidth: '600px', margin: '0 auto', fontFamily: 'Pretendard, sans-serif', fontSize: '0.9rem', lineHeight: '1.8', color: '#333', backgroundColor: '#ffffff', minHeight: '100vh'  }}>
       <h1 style={{ fontSize: '1.3rem', fontWeight: 'bold', marginBottom: '2rem' }}>이용약관</h1>
       <pre style={{ whiteSpace: 'pre-wrap', fontFamily: 'inherit' }}>
 {`메리웨더 이용약관
