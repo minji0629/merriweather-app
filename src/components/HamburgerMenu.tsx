@@ -21,7 +21,7 @@ export function HamburgerMenu() {
     setOpen(false);
   };
 
-  const handleNavigate = (page: 'landing' | 'nickname' | 'archive' | 'gift' | 'notice' | 'contact') => {
+  const handleNavigate = (page: 'landing' | 'nickname' | 'archive' | 'gift' | 'notice' | 'contact' | 'terms' | 'privacy') => {
     setOpen(false);
     setCurrentPage(page);
   };
