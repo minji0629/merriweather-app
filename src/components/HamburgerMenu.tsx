@@ -126,7 +126,7 @@ export function HamburgerMenu() {
 
               {/* 이용약관 */}
               <button
-                onClick={() => handleExternal('https://merriweather.kr/terms')}
+                onClick={() => handleNavigate('terms')}
                 className="w-full text-left px-4 py-3 rounded-xl font-sans text-sm text-text hover:bg-point/5 transition-colors"
               >
                 이용약관
@@ -134,7 +134,7 @@ export function HamburgerMenu() {
 
               {/* 개인정보처리방침 */}
               <button
-                onClick={() => handleExternal('https://merriweather.kr/privacy')}
+                onClick={() => handleNavigate('privacy')}
                 className="w-full text-left px-4 py-3 rounded-xl font-sans text-sm text-text hover:bg-point/5 transition-colors"
               >
                 개인정보처리방침
