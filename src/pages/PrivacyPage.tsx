@@ -5,7 +5,7 @@ export default function PrivacyPage() {
     <div style={{ padding: '2rem 1.5rem', maxWidth: '600px', margin: '0 auto', fontFamily: 'Pretendard, sans-serif', fontSize: '0.9rem', lineHeight: '1.8', color: '#333' }}>
       <h1 style={{ fontSize: '1.3rem', fontWeight: 'bold', marginBottom: '2rem' }}>개인정보처리방침</h1>
       <pre style={{ whiteSpace: 'pre-wrap', fontFamily: 'inherit' }}>
-{메리웨더 개인정보처리방침
+{`메리웨더 개인정보처리방침
 
 릴 스튜디오(이하 "회사")는 이용자의 개인정보를 중요시하며, 개인정보 보호법 등 관련 법령을 준수합니다.
 
@@ -90,7 +90,7 @@ export default function PrivacyPage() {
 대표자: 황민지
 사업자등록번호: 497-10-03495
 주소: 경상남도 창원시 마산회원구 회성동 6길 14
-이메일: merriweather.official@gmail.com}
+이메일: merriweather.official@gmail.com`}
       </pre>
     </div>
   );
