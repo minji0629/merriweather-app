@@ -41,14 +41,6 @@ export function LandingPage() {
           여행 시작하기
           <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
         </button>
-      {/* 사업자 정보 */}
-        <div className="relative z-10 w-full text-center py-3 px-4">
-          <p className="text-white/50 text-[10px] leading-relaxed drop-shadow-sm">
-            상호명: 릴 스튜디오 · 대표: 황민지 · 사업자등록번호: 497-10-03495<br />
-            주소: 경상남도 창원시 마산회원구 회성동 6길 14 · 이메일: merriweather.official@gmail.com<br />
-            통신판매업 신고번호: 준비중 · 대표전화: 준비중
-          </p>
-        </div>
       </div>
     </PageContainer>
   );
