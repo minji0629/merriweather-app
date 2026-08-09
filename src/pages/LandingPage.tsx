@@ -46,16 +46,14 @@ export function LandingPage() {
       </div>
 
       {/* Business info — below the hero */}
-      <div className="relative z-10 w-full max-w-[340px] mx-auto px-6 py-10 animate-fadeUp"
+      <div className="relative z-10 w-full bg-black px-6 py-10 animate-fadeUp"
            style={{ animationDelay: '0.9s', opacity: 0 }}>
-        <div className="rounded-2xl bg-black/5 px-5 py-4">
-          <div className="text-[10px] leading-[1.8] text-white/80 font-sans space-y-0.5">
-            <p>상호명: 릴 스튜디오 | 대표: 황민지</p>
-            <p>사업자등록번호: 497-10-03495</p>
-            <p>주소: 경상남도 창원시 마산회원구 회성동 6길 14</p>
-            <p>이메일: merriweather.official@gmail.com</p>
-            <p>통신판매업 신고번호: 추후 기재 | 대표전화: 추후 기재</p>
-          </div>
+        <div className="max-w-[340px] mx-auto text-[10px] leading-[1.8] text-white/80 font-sans space-y-0.5">
+          <p>상호명: 릴 스튜디오 | 대표: 황민지</p>
+          <p>사업자등록번호: 497-10-03495</p>
+          <p>주소: 경상남도 창원시 마산회원구 회성동 6길 14</p>
+          <p>이메일: merriweather.official@gmail.com</p>
+          <p>통신판매업 신고번호: 추후 기재 | 대표전화: 추후 기재</p>
         </div>
       </div>
     </div>
