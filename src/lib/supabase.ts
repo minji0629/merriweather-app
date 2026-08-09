@@ -1,13 +1,13 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from '@supabase/Bolt Database-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL ?? 'http://localhost:54321';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY ?? 'public-anon-key';
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn('[Supabase] 환경변수가 설정되지 않았습니다.');
+if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
+  console.warn('[Bolt Database] 환경변수가 설정되지 않았습니다.');
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const Bolt Database = createClient(supabaseUrl, supabaseAnonKey);
 
 export interface UserRow {
   id: string;
@@ -75,7 +75,7 @@ export async function upsertUser(
   email?: string,
 ): Promise<UserRow | null> {
   const id = String(userId);
-  const { data, error } = await supabase
+  const { data, error } = await Bolt Database
     .from('users')
     .upsert(
       {
@@ -91,7 +91,7 @@ export async function upsertUser(
     .maybeSingle();
 
   if (error) {
-    console.error('[Supabase] upsertUser error:', error.message);
+    console.error('[Bolt Database] upsertUser error:', error.message);
     return null;
   }
   return data as UserRow | null;
@@ -102,7 +102,7 @@ export async function saveFreeResult(
   residentKey: string,
   answers: Record<string, unknown>,
 ): Promise<ResultRow | null> {
-  const { data, error } = await supabase
+  const { data, error } = await Bolt Database
     .from('results')
     .insert({
       user_id: userId,
@@ -114,7 +114,7 @@ export async function saveFreeResult(
     .maybeSingle();
 
   if (error) {
-    console.error('[Supabase] saveFreeResult error:', error.message);
+    console.error('[Bolt Database] saveFreeResult error:', error.message);
     return null;
   }
   return data as ResultRow | null;
@@ -127,7 +127,7 @@ export async function savePurchase(
   paymentKey: string,
   orderId: string,
 ): Promise<PurchaseRow | null> {
-  const { data, error } = await supabase
+  const { data, error } = await Bolt Database
     .from('purchases')
     .insert({
       user_id: userId,
@@ -140,27 +140,27 @@ export async function savePurchase(
     .maybeSingle();
 
   if (error) {
-    console.error('[Supabase] savePurchase error:', error.message);
+    console.error('[Bolt Database] savePurchase error:', error.message);
     return null;
   }
   return data as PurchaseRow | null;
 }
 
 export async function markResultPaid(resultId: string): Promise<boolean> {
-  const { error } = await supabase
+  const { error } = await Bolt Database
     .from('results')
     .update({ is_paid: true })
     .eq('id', resultId);
 
   if (error) {
-    console.error('[Supabase] markResultPaid error:', error.message);
+    console.error('[Bolt Database] markResultPaid error:', error.message);
     return false;
   }
   return true;
 }
 
 export async function markLatestResultPaid(userId: string): Promise<boolean> {
-  const { data: latest, error: selectError } = await supabase
+  const { data: latest, error: selectError } = await Bolt Database
     .from('results')
     .select('id')
     .eq('user_id', userId)
@@ -169,7 +169,7 @@ export async function markLatestResultPaid(userId: string): Promise<boolean> {
     .maybeSingle();
 
   if (selectError || !latest) {
-    console.error('[Supabase] markLatestResultPaid lookup failed:', selectError?.message);
+    console.error('[Bolt Database] markLatestResultPaid lookup failed:', selectError?.message);
     return false;
   }
 
@@ -177,14 +177,14 @@ export async function markLatestResultPaid(userId: string): Promise<boolean> {
 }
 
 export async function fetchUserResults(userId: string): Promise<ResultRow[]> {
-  const { data, error } = await supabase
+  const { data, error } = await Bolt Database
     .from('results')
     .select('id, user_id, resident_key, is_paid, ai_result, ai_letter, created_at')
     .eq('user_id', userId)
     .order('created_at', { ascending: false });
 
   if (error) {
-    console.error('[Supabase] fetchUserResults error:', error.message);
+    console.error('[Bolt Database] fetchUserResults error:', error.message);
     return [];
   }
   return (data as ResultRow[]) ?? [];
@@ -192,14 +192,14 @@ export async function fetchUserResults(userId: string): Promise<ResultRow[]> {
 
 /** 특정 result_id로 단일 결과 행을 불러온다 (보관함에서 선택한 결과용) */
 export async function fetchResultById(resultId: string): Promise<ResultRow | null> {
-  const { data, error } = await supabase
+  const { data, error } = await Bolt Database
     .from('results')
     .select('id, user_id, resident_key, is_paid, ai_result, ai_letter, created_at')
     .eq('id', resultId)
     .maybeSingle();
 
   if (error) {
-    console.error('[Supabase] fetchResultById error:', error.message);
+    console.error('[Bolt Database] fetchResultById error:', error.message);
     return null;
   }
   return data as ResultRow | null;
@@ -211,12 +211,12 @@ export async function saveAiText(
   field: 'ai_result' | 'ai_letter',
   text: string,
 ): Promise<boolean> {
-  const { error } = await supabase
+  const { error } = await Bolt Database
     .from('results')
     .update({ [field]: text })
     .eq('id', resultId);
   if (error) {
-    console.error(`[Supabase] saveAiText (${field}) error:`, error.message);
+    console.error(`[Bolt Database] saveAiText (${field}) error:`, error.message);
     return false;
   }
   return true;
@@ -227,23 +227,23 @@ export async function appendQuestionHistory(
   questionId: string,
   entry: QuestionHistoryEntry,
 ): Promise<boolean> {
-  const { data, error } = await supabase
+  const { data, error } = await Bolt Database
     .from('questions')
     .select('question_history')
     .eq('id', questionId)
     .maybeSingle();
   if (error) {
-    console.error('[Supabase] appendQuestionHistory fetch error:', error.message);
+    console.error('[Bolt Database] appendQuestionHistory fetch error:', error.message);
     return false;
   }
   const existing = (data?.question_history as QuestionHistoryEntry[] | null) ?? [];
   const updated = [...existing, entry];
-  const { error: updateError } = await supabase
+  const { error: updateError } = await Bolt Database
     .from('questions')
     .update({ question_history: updated })
     .eq('id', questionId);
   if (updateError) {
-    console.error('[Supabase] appendQuestionHistory update error:', updateError.message);
+    console.error('[Bolt Database] appendQuestionHistory update error:', updateError.message);
     return false;
   }
   return true;
@@ -269,7 +269,7 @@ export async function upsertQuestions(
 ): Promise<QuestionRow | null> {
   if (productType === '추가질문') {
     // 기존 행 찾아서 +3
-    const { data: existing } = await supabase
+    const { data: existing } = await Bolt Database
       .from('questions')
       .select('id, remaining_count')
       .eq('user_id', userId)
@@ -277,39 +277,39 @@ export async function upsertQuestions(
       .maybeSingle();
 
     if (existing) {
-      const { data, error } = await supabase
+      const { data, error } = await Bolt Database
         .from('questions')
         .update({ remaining_count: existing.remaining_count + 3 })
         .eq('id', existing.id)
         .select()
         .maybeSingle();
       if (error) {
-        console.error('[Supabase] upsertQuestions(extra) error:', error.message);
+        console.error('[Bolt Database] upsertQuestions(extra) error:', error.message);
         return null;
       }
       return data as QuestionRow | null;
     }
     // 행이 없으면 3으로 새로 생성
-    const { data, error } = await supabase
+    const { data, error } = await Bolt Database
       .from('questions')
       .insert({ user_id: userId, result_id: resultId, remaining_count: 3 })
       .select()
       .maybeSingle();
     if (error) {
-      console.error('[Supabase] upsertQuestions(extra-new) error:', error.message);
+      console.error('[Bolt Database] upsertQuestions(extra-new) error:', error.message);
       return null;
     }
     return data as QuestionRow | null;
   }
 
   const count = INITIAL_COUNTS[productType] ?? 1;
-  const { data, error } = await supabase
+  const { data, error } = await Bolt Database
     .from('questions')
     .insert({ user_id: userId, result_id: resultId, remaining_count: count })
     .select()
     .maybeSingle();
   if (error) {
-    console.error('[Supabase] upsertQuestions error:', error.message);
+    console.error('[Bolt Database] upsertQuestions error:', error.message);
     return null;
   }
   return data as QuestionRow | null;
@@ -320,14 +320,14 @@ export async function fetchQuestions(
   userId: string,
   resultId: string,
 ): Promise<QuestionRow | null> {
-  const { data, error } = await supabase
+  const { data, error } = await Bolt Database
     .from('questions')
     .select('*')
     .eq('user_id', userId)
     .eq('result_id', resultId)
     .maybeSingle();
   if (error) {
-    console.error('[Supabase] fetchQuestions error:', error.message);
+    console.error('[Bolt Database] fetchQuestions error:', error.message);
     return null;
   }
   return data as QuestionRow | null;
@@ -337,7 +337,7 @@ export async function fetchQuestions(
 export async function fetchLatestQuestionsByUser(
   userId: string,
 ): Promise<QuestionRow | null> {
-  const { data, error } = await supabase
+  const { data, error } = await Bolt Database
     .from('questions')
     .select('*')
     .eq('user_id', userId)
@@ -345,7 +345,7 @@ export async function fetchLatestQuestionsByUser(
     .limit(1)
     .maybeSingle();
   if (error) {
-    console.error('[Supabase] fetchLatestQuestionsByUser error:', error.message);
+    console.error('[Bolt Database] fetchLatestQuestionsByUser error:', error.message);
     return null;
   }
   return data as QuestionRow | null;
@@ -357,13 +357,13 @@ export async function createDefaultQuestions(
   resultId: string,
   count = 1,
 ): Promise<QuestionRow | null> {
-  const { data, error } = await supabase
+  const { data, error } = await Bolt Database
     .from('questions')
     .insert({ user_id: userId, result_id: resultId, remaining_count: count })
     .select()
     .maybeSingle();
   if (error) {
-    console.error('[Supabase] createDefaultQuestions error:', error.message);
+    console.error('[Bolt Database] createDefaultQuestions error:', error.message);
     return null;
   }
   return data as QuestionRow | null;
@@ -372,12 +372,12 @@ export async function createDefaultQuestions(
 /** 질문 1회 사용: remaining_count - 1. 이미 0이면 false 반환 */
 export async function decrementQuestion(rowId: string, current: number): Promise<boolean> {
   if (current <= 0) return false;
-  const { error } = await supabase
+  const { error } = await Bolt Database
     .from('questions')
     .update({ remaining_count: current - 1 })
     .eq('id', rowId);
   if (error) {
-    console.error('[Supabase] decrementQuestion error:', error.message);
+    console.error('[Bolt Database] decrementQuestion error:', error.message);
     return false;
   }
   return true;
@@ -385,8 +385,8 @@ export async function decrementQuestion(rowId: string, current: number): Promise
 
 export async function deleteResult(resultId: string, userId: string): Promise<boolean> {
   console.log('[Delete Result] 1. 삭제할 result id:', resultId, '/ user_id:', userId);
-  console.log('[Delete Result] 2. Supabase delete 호출...');
-  const { data, error } = await supabase
+  console.log('[Delete Result] 2. Bolt Database delete 호출...');
+  const { data, error } = await Bolt Database
     .from('results')
     .delete()
     .eq('id', resultId)
