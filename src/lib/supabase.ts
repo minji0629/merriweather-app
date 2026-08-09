@@ -158,7 +158,22 @@ export async function markResultPaid(resultId: string): Promise<boolean> {
   }
   return true;
 }
+export async function markLatestResultPaid(userId: string): Promise<boolean> {
+  const { data: latest, error: selectError } = await supabase
+    .from('results')
+    .select('id')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
 
+  if (selectError || !latest) {
+    console.error('[supabase] markLatestResultPaid lookup failed:', selectError?.message);
+    return false;
+  }
+
+  return markResultPaid(latest.id);
+}
 export async function deleteResult(resultId: string, userId: string): Promise<boolean> {
   const { data, error } = await supabase
     .from('results')
