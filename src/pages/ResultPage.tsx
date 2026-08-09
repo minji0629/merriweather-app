@@ -22,7 +22,7 @@ const PREMIUM_SECTIONS = [
 ];
 
 export function ResultPage() {
-  const { nickname, setCurrentPage, residentKey, selectedResidentKey, previewMode, restart, previousPage } = useApp();
+  const { nickname, setCurrentPage, residentKey, selectedResidentKey, restart, previousPage } = useApp();
   const { user, login } = useAuth();
   const { currentPage } = useApp();
   const [showSavePrompt, setShowSavePrompt] = useState(false);
@@ -203,61 +203,47 @@ export function ResultPage() {
 
         {/* Payment buttons */}
         <div className="px-6 pb-6 space-y-3 sticky bottom-0 bg-base/95 backdrop-blur-sm pt-4 border-t border-[#E0DDD8]">
-          {previewMode ? (
-            <button
-              onClick={() => setCurrentPage('premium')}
-              className="w-full py-4 bg-point text-white rounded-2xl font-sans font-medium text-base
-                         shadow-lg transition-all duration-300 hover:bg-point-dark hover:shadow-xl hover:scale-[1.02] active:scale-95
-                         flex items-center justify-center gap-2"
-            >
+          <button
+            onClick={() => {
+              if (!user) {
+                setShowSavePrompt(true);
+              } else {
+                setCurrentPage('payment');
+              }
+            }}
+            className="w-full py-4 bg-point text-white rounded-2xl font-sans font-medium text-base
+                       shadow-lg transition-all duration-300 hover:bg-point-dark hover:shadow-xl hover:scale-[1.02] active:scale-95
+                       flex items-center justify-between px-6"
+          >
+            <span className="flex items-center gap-2">
               <Sparkles className="w-4 h-4" />
-              유료 결과 미리보기
+              탐험권 구매하기
+            </span>
+            <span className="font-bold">4,990원</span>
+          </button>
+          <div className="relative">
+            <button
+              onClick={() => {
+                if (!user) {
+                  setShowSavePrompt(true);
+                } else {
+                  setCurrentPage('payment');
+                }
+              }}
+              className="w-full py-4 bg-text text-white rounded-2xl font-sans font-medium text-base
+                         shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-[1.02] active:scale-95
+                         flex items-center justify-between px-6"
+            >
+              <span className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4" />
+                탐험권 + 추가 질문
+              </span>
+              <span className="font-bold">6,980원</span>
             </button>
-          ) : (
-            <>
-              <button
-                onClick={() => {
-                  if (!user) {
-                    setShowSavePrompt(true);
-                  } else {
-                    setCurrentPage('payment');
-                  }
-                }}
-                className="w-full py-4 bg-point text-white rounded-2xl font-sans font-medium text-base
-                           shadow-lg transition-all duration-300 hover:bg-point-dark hover:shadow-xl hover:scale-[1.02] active:scale-95
-                           flex items-center justify-between px-6"
-              >
-                <span className="flex items-center gap-2">
-                  <Sparkles className="w-4 h-4" />
-                  탐험권 구매하기
-                </span>
-                <span className="font-bold">4,990원</span>
-              </button>
-              <div className="relative">
-                <button
-                  onClick={() => {
-                    if (!user) {
-                      setShowSavePrompt(true);
-                    } else {
-                      setCurrentPage('payment');
-                    }
-                  }}
-                  className="w-full py-4 bg-text text-white rounded-2xl font-sans font-medium text-base
-                             shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-[1.02] active:scale-95
-                             flex items-center justify-between px-6"
-                >
-                  <span className="flex items-center gap-2">
-                    <Sparkles className="w-4 h-4" />
-                    탐험권 + 추가 질문
-                  </span>
-                  <span className="font-bold">6,980원</span>
-                </button>
-                <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-golden text-text text-xs font-sans font-bold rounded-full shadow-md whitespace-nowrap">
-                  추천
-                </span>
-              </div>
-            </>
-          )}
+            <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-golden text-text text-xs font-sans font-bold rounded-full shadow-md whitespace-nowrap">
+              추천
+            </span>
+          </div>
         </div>
 
         {/* Save result prompt (login required) */}
