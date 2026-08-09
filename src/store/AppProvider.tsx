@@ -73,11 +73,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const resetAnswers = useCallback(() => setAnswers([]), []);
 
-  const previewMode = useMemo(() => {
-    if (typeof window === 'undefined') return false;
-    return new URLSearchParams(window.location.search).get('preview') === 'true';
-  }, []);
-
   const restart = useCallback(() => {
     setNickname('');
     setAnswers([]);
@@ -108,7 +103,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setSelectedResultId,
     selectedResidentKey,
     setSelectedResidentKey,
-    previewMode,
     restart,
   };
 
