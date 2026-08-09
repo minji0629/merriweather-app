@@ -159,4 +159,17 @@ export async function markResultPaid(resultId: string): Promise<boolean> {
   return true;
 }
 
-export async function
+export async function deleteResult(resultId: string, userId: string): Promise<boolean> {
+  const { data, error } = await supabase
+    .from('results')
+    .delete()
+    .eq('id', resultId)
+    .eq('user_id', userId)
+    .select();
+
+  if (error) {
+    console.error('[Delete Result] 삭제 실패:', error.message);
+    return false;
+  }
+  return true;
+}
