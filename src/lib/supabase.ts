@@ -158,6 +158,7 @@ export async function markResultPaid(resultId: string): Promise<boolean> {
   }
   return true;
 }
+
 export async function markLatestResultPaid(userId: string): Promise<boolean> {
   const { data: latest, error: selectError } = await supabase
     .from('results')
@@ -174,6 +175,197 @@ export async function markLatestResultPaid(userId: string): Promise<boolean> {
 
   return markResultPaid(latest.id);
 }
+
+export async function fetchUserResults(userId: string): Promise<ResultRow[]> {
+  const { data, error } = await supabase
+    .from('results')
+    .select('id, user_id, resident_key, is_paid, ai_result, ai_letter, created_at')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('[supabase] fetchUserResults error:', error.message);
+    return [];
+  }
+  return (data as ResultRow[]) ?? [];
+}
+
+export async function fetchResultById(resultId: string): Promise<ResultRow | null> {
+  const { data, error } = await supabase
+    .from('results')
+    .select('id, user_id, resident_key, is_paid, ai_result, ai_letter, created_at')
+    .eq('id', resultId)
+    .maybeSingle();
+
+  if (error) {
+    console.error('[supabase] fetchResultById error:', error.message);
+    return null;
+  }
+  return data as ResultRow | null;
+}
+
+export async function saveAiText(
+  resultId: string,
+  field: 'ai_result' | 'ai_letter',
+  text: string,
+): Promise<boolean> {
+  const { error } = await supabase
+    .from('results')
+    .update({ [field]: text })
+    .eq('id', resultId);
+  if (error) {
+    console.error(`[supabase] saveAiText (${field}) error:`, error.message);
+    return false;
+  }
+  return true;
+}
+
+export async function appendQuestionHistory(
+  questionId: string,
+  entry: QuestionHistoryEntry,
+): Promise<boolean> {
+  const { data, error } = await supabase
+    .from('questions')
+    .select('question_history')
+    .eq('id', questionId)
+    .maybeSingle();
+  if (error) {
+    console.error('[supabase] appendQuestionHistory fetch error:', error.message);
+    return false;
+  }
+  const existing = (data?.question_history as QuestionHistoryEntry[] | null) ?? [];
+  const updated = [...existing, entry];
+  const { error: updateError } = await supabase
+    .from('questions')
+    .update({ question_history: updated })
+    .eq('id', questionId);
+  if (updateError) {
+    console.error('[supabase] appendQuestionHistory update error:', updateError.message);
+    return false;
+  }
+  return true;
+}
+
+const INITIAL_COUNTS: Record<string, number> = {
+  '탐험권': 1,
+  '탐험권+추가질문': 3,
+};
+
+export async function upsertQuestions(
+  userId: string,
+  resultId: string,
+  productType: string,
+): Promise<QuestionRow | null> {
+  if (productType === '추가질문') {
+    const { data: existing } = await supabase
+      .from('questions')
+      .select('id, remaining_count')
+      .eq('user_id', userId)
+      .eq('result_id', resultId)
+      .maybeSingle();
+
+    if (existing) {
+      const { data, error } = await supabase
+        .from('questions')
+        .update({ remaining_count: existing.remaining_count + 3 })
+        .eq('id', existing.id)
+        .select()
+        .maybeSingle();
+      if (error) {
+        console.error('[supabase] upsertQuestions(extra) error:', error.message);
+        return null;
+      }
+      return data as QuestionRow | null;
+    }
+    const { data, error } = await supabase
+      .from('questions')
+      .insert({ user_id: userId, result_id: resultId, remaining_count: 3 })
+      .select()
+      .maybeSingle();
+    if (error) {
+      console.error('[supabase] upsertQuestions(extra-new) error:', error.message);
+      return null;
+    }
+    return data as QuestionRow | null;
+  }
+
+  const count = INITIAL_COUNTS[productType] ?? 1;
+  const { data, error } = await supabase
+    .from('questions')
+    .insert({ user_id: userId, result_id: resultId, remaining_count: count })
+    .select()
+    .maybeSingle();
+  if (error) {
+    console.error('[supabase] upsertQuestions error:', error.message);
+    return null;
+  }
+  return data as QuestionRow | null;
+}
+
+export async function fetchQuestions(
+  userId: string,
+  resultId: string,
+): Promise<QuestionRow | null> {
+  const { data, error } = await supabase
+    .from('questions')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('result_id', resultId)
+    .maybeSingle();
+  if (error) {
+    console.error('[supabase] fetchQuestions error:', error.message);
+    return null;
+  }
+  return data as QuestionRow | null;
+}
+
+export async function fetchLatestQuestionsByUser(
+  userId: string,
+): Promise<QuestionRow | null> {
+  const { data, error } = await supabase
+    .from('questions')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) {
+    console.error('[supabase] fetchLatestQuestionsByUser error:', error.message);
+    return null;
+  }
+  return data as QuestionRow | null;
+}
+
+export async function createDefaultQuestions(
+  userId: string,
+  resultId: string,
+  count = 1,
+): Promise<QuestionRow | null> {
+  const { data, error } = await supabase
+    .from('questions')
+    .insert({ user_id: userId, result_id: resultId, remaining_count: count })
+    .select()
+    .maybeSingle();
+  if (error) {
+    console.error('[supabase] createDefaultQuestions error:', error.message);
+    return null;
+  }
+  return data as QuestionRow | null;
+}
+
+export async function decrementQuestion(rowId: string, current: number): Promise<boolean> {
+  if (current <= 0) return false;
+  const { error } = await supabase
+    .from('questions')
+    .update({ remaining_count: current - 1 })
+    .eq('id', rowId);
+  if (error) {
+    console.error('[supabase] decrementQuestion error:', error.message);
+    return false;
+  }
+  return true;
+}
+
 export async function deleteResult(resultId: string, userId: string): Promise<boolean> {
   const { data, error } = await supabase
     .from('results')
