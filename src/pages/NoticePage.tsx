@@ -44,7 +44,7 @@ export function NoticePage() {
                   나를 찾아 떠나는 여행, 기억의 숲에서 만나요.
                 </p>
                 <p className="font-sans text-sm text-text-sub leading-relaxed">
-                  2026년 8월 정식 오픈 예정입니다.
+                  2026년 9월 정식 오픈 예정입니다.
                 </p>
               </div>
             </article>
